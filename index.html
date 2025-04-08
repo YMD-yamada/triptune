@@ -11,31 +11,19 @@
 <body>
   <main class="container">
     <h1>TripTune</h1>
-    <p class="intro">あなたの今日の気分にぴったりな旅先を見つけよう</p>
+    <p>あなたの気分にぴったりの旅を見つけよう</p>
+    <div id="mode-toggle">モード: <span id="current-mode">Calm</span> <button onclick="toggleMode()">切替</button></div>
     <div id="question-area">
-      <div id="q1" class="question">
-        <p>今の気分は？</p>
-        <button onclick="next(1, 'relax')">ゆったり</button>
-        <button onclick="next(1, 'excite')">刺激的</button>
-      </div>
-      <div id="q2" class="question hidden">
-        <p>どんな景色が見たい？</p>
-        <button onclick="next(2, 'nature')">自然</button>
-        <button onclick="next(2, 'city')">都会</button>
-      </div>
-      <div id="q3" class="question hidden">
-        <p>誰と行く？</p>
-        <button onclick="showResult('solo')">ひとりで</button>
-        <button onclick="showResult('couple')">恋人と</button>
-      </div>
+      <div id="progress"></div>
+      <div id="question-text"></div>
+      <div id="answers"></div>
     </div>
-    <div id="result" class="result hidden">
+    <div id="result" class="hidden">
       <h2 id="destination"></h2>
       <p id="desc"></p>
       <div id="link-area"></div>
     </div>
   </main>
-  <div class="toggle" onclick="toggleMode()">世界観切替：<span id="mode-label">Calm</span></div>
   <script src="app.js"></script>
 </body>
 </html>
