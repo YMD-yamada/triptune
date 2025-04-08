@@ -33,47 +33,54 @@ function showResult(final) {
   document.getElementById("destination").textContent = result.name;
   document.getElementById("desc").textContent = result.desc;
 
-  if (mode === "vivid" && result.link) {
-    document.getElementById("link-area").innerHTML = `
-      <p><a href="${result.link}" target="_blank">→ この旅の感覚を映像で体験</a></p>
-    `;
+  let links = `<p><a href="${result.normal}" target="_blank">→ この旅先を調べる</a></p>`;
+  if (mode === "vivid" && result.fanza) {
+    links += `<p><a href="${result.fanza}" target="_blank">→ この旅の感覚を映像で体験</a></p>`;
   }
+  document.getElementById("link-area").innerHTML = links;
 }
 
 const results = {
   "relax-nature-solo": {
     name: "京都",
     desc: "静かに心を整える旅先。",
-    link: "https://www.dmm.co.jp/digital/videoa/-/list/=/article=keyword/id=人妻/"
+    fanza: "https://www.dmm.co.jp/digital/videoa/-/search/=/searchstr=人妻/",
+    normal: "https://www.google.com/search?q=京都+旅行"
   },
   "relax-city-couple": {
     name: "ソウル",
     desc: "美味しいものと穏やかな時間。",
-    link: "https://www.dmm.co.jp/digital/videoa/-/list/=/article=keyword/id=ラブラブ/"
+    fanza: "https://www.dmm.co.jp/digital/videoa/-/search/=/searchstr=ラブラブ/",
+    normal: "https://www.google.com/search?q=ソウル+旅行"
   },
   "excite-nature-solo": {
     name: "アイスランド",
     desc: "非日常の静けさと神秘。",
-    link: "https://www.dmm.co.jp/digital/videoa/-/list/=/article=keyword/id=SM/"
+    fanza: "https://www.dmm.co.jp/digital/videoa/-/search/=/searchstr=SM/",
+    normal: "https://www.google.com/search?q=アイスランド+旅行"
   },
   "excite-city-couple": {
     name: "バリ島",
     desc: "日常を忘れる濃密な時間。",
-    link: "https://www.dmm.co.jp/digital/videoa/-/list/=/article=keyword/id=中出し/"
+    fanza: "https://www.dmm.co.jp/digital/videoa/-/search/=/searchstr=中出し/",
+    normal: "https://www.google.com/search?q=バリ島+旅行"
   },
   "relax-nature-couple": {
     name: "箱根",
     desc: "自然と温泉で心を癒す。",
-    link: "https://www.dmm.co.jp/digital/videoa/-/list/=/article=keyword/id=混浴/"
+    fanza: "https://www.dmm.co.jp/digital/videoa/-/search/=/searchstr=混浴/",
+    normal: "https://www.google.com/search?q=箱根+温泉"
   },
   "excite-city-solo": {
     name: "ニューヨーク",
     desc: "刺激的でアクティブな時間。",
-    link: "https://www.dmm.co.jp/digital/videoa/-/list/=/article=keyword/id=ギャル/"
+    fanza: "https://www.dmm.co.jp/digital/videoa/-/search/=/searchstr=ギャル/",
+    normal: "https://www.google.com/search?q=ニューヨーク+旅行"
   },
   "default": {
     name: "モロッコ",
     desc: "エキゾチックな冒険が待っている。",
-    link: "https://www.dmm.co.jp/digital/videoa/-/list/=/article=keyword/id=異文化/"
+    fanza: "https://www.dmm.co.jp/digital/videoa/-/search/=/searchstr=異文化/",
+    normal: "https://www.google.com/search?q=モロッコ+旅行"
   }
 };
