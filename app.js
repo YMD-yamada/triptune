@@ -28,17 +28,17 @@ function answer(a){
 }
 
 function showResult(){
-  const resultKey=answers.join("-");
-  const destination=resultKey.split("-")[0]+"な旅";
-  const desc="あなたにピッタリな旅先です！";
+  const mood=answers[0],view=answers[1],partner=answers[2],season=answers[3],purpose=answers[4];
+  const place=`${view==="自然"?"北海道":view==="都会"?"東京":"沖縄"}`;
+  const keyword=`${mood}+${purpose}+${season}+${partner}`;
   document.getElementById("question-area").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
-  document.getElementById("destination").textContent=destination;
-  document.getElementById("desc").textContent=desc;
-  const searchTerm=answers.join("+");
-  const link=mode==="calm"?`https://www.google.com/search?q=${searchTerm}+旅行`:
+  document.getElementById("destination").textContent=place;
+  document.getElementById("desc").textContent=`${mood}な気分で${purpose}する${place}への旅`;
+  const searchTerm=encodeURIComponent(keyword);
+  const link=mode==="calm"?`https://www.google.com/search?q=${place}+${searchTerm}`:
   `https://www.dmm.co.jp/digital/videoa/-/list/search/=/?searchstr=${searchTerm}`;
-  document.getElementById("link-area").innerHTML=`<a href="${link}" target="_blank">${mode==="calm"?"この旅先を調べる":"映像で体験する"}</a>`;
+  document.getElementById("link-area").innerHTML=`<a href="${link}" target="_blank">${mode==="calm"?"詳しく調べる":"映像を見る"}</a>`;
 }
 
 showQuestion();
