@@ -37,9 +37,6 @@ function answer(a) {
   answers.push(a);
   if (++currentQ < questions.length) {
     showQuestion();
-  } else if (mode === "calm" && answers.includes("不安定")) {
-    document.getElementById("question-area").classList.add("hidden");
-    document.getElementById("mood-switch").classList.remove("hidden");
   } else {
     showResult();
   }
@@ -48,13 +45,7 @@ function answer(a) {
 function switchToVivid() {
   mode = "vivid";
   localStorage.setItem("mode", mode);
-  document.getElementById("mood-switch").classList.add("hidden");
-  showResult();
-}
-
-function stayCalm() {
-  document.getElementById("mood-switch").classList.add("hidden");
-  showResult();
+  location.reload();
 }
 
 function showResult() {
@@ -76,6 +67,10 @@ function showResult() {
 
   const text = mode === "calm" ? "詳しく調べる" : "映像を見る";
   document.getElementById("link-area").innerHTML = `<a href="${link}" target="_blank">${text}</a>`;
+
+  if (mode === "calm") {
+    document.getElementById("invite-area").classList.remove("hidden");
+  }
 }
 
 showQuestion();
