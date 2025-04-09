@@ -1,4 +1,7 @@
 
+const params = new URLSearchParams(location.search);
+let mode = params.get("mode") === "vivid" ? "vivid" : "calm";
+
 const questions = [
   {text: "気分は？", answers: ["ゆったり", "刺激的", "ロマンチック", "不安定"]},
   {text: "景色は？", answers: ["自然", "都会", "海", "山"]},
@@ -18,7 +21,6 @@ const fanzaKeywords = {
 };
 
 let currentQ = 0, answers = [];
-let mode = "calm"; // 強制的にCalmからスタート（セッションまたぎなし）
 
 function showQuestion() {
   const q = questions[currentQ];
@@ -36,9 +38,9 @@ function answer(a) {
   }
 }
 
-function switchToVivid() {
-  mode = "vivid";
-  showResult(); // 再表示
+function redirectToVivid() {
+  const base = location.href.split("?")[0];
+  location.href = base + "?mode=vivid";
 }
 
 function showResult() {
@@ -62,11 +64,7 @@ function showResult() {
 
   if (mode === "calm") {
     document.getElementById("invite-area").classList.remove("hidden");
-  } else {
-    document.getElementById("invite-area").classList.add("hidden");
   }
 }
-
-showQuestion();
 
 window.onload = showQuestion;
