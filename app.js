@@ -68,3 +68,5 @@ function showResult() {
 }
 
 showQuestion();
+
+window.onload = showQuestion;
