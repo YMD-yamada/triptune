@@ -18,12 +18,7 @@ const fanzaKeywords = {
 };
 
 let currentQ = 0, answers = [];
-let mode = localStorage.getItem("mode");
-if (!mode) {
-  mode = "calm";
-  localStorage.setItem("mode", mode);
-}
-document.getElementById("current-mode").textContent = mode;
+let mode = "calm"; // 強制的にCalmからスタート（セッションまたぎなし）
 
 function showQuestion() {
   const q = questions[currentQ];
@@ -43,8 +38,7 @@ function answer(a) {
 
 function switchToVivid() {
   mode = "vivid";
-  localStorage.setItem("mode", mode);
-  location.reload();
+  showResult(); // 再表示
 }
 
 function showResult() {
@@ -63,11 +57,13 @@ function showResult() {
   const link = mode === "calm"
     ? `https://www.google.com/search?q=${encodeURIComponent(googleSearch)}`
     : `https://www.dmm.co.jp/digital/videoa/-/list/search/=/?searchstr=${encodeURIComponent(fanzaSearch)}`;
-  const text = mode === "calm" ? "詳しく調べる" : "映像を見る";
-  document.getElementById("link-area").innerHTML = `<a href="${link}" target="_blank">${text}</a>`;
+
+  document.getElementById("link-area").innerHTML = `<a href="${link}" target="_blank">この旅をもっと深く知る</a>`;
 
   if (mode === "calm") {
     document.getElementById("invite-area").classList.remove("hidden");
+  } else {
+    document.getElementById("invite-area").classList.add("hidden");
   }
 }
 
