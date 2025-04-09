@@ -17,14 +17,13 @@ const fanzaKeywords = {
   "default": "異文化"
 };
 
-let currentQ = 0, answers = [], mode = localStorage.getItem("mode") || "calm";
-document.getElementById("current-mode").textContent = mode;
-
-function toggleMode() {
-  mode = mode === "calm" ? "vivid" : "calm";
+let currentQ = 0, answers = [];
+let mode = localStorage.getItem("mode");
+if (!mode) {
+  mode = "calm";
   localStorage.setItem("mode", mode);
-  location.reload();
 }
+document.getElementById("current-mode").textContent = mode;
 
 function showQuestion() {
   const q = questions[currentQ];
@@ -64,7 +63,6 @@ function showResult() {
   const link = mode === "calm"
     ? `https://www.google.com/search?q=${encodeURIComponent(googleSearch)}`
     : `https://www.dmm.co.jp/digital/videoa/-/list/search/=/?searchstr=${encodeURIComponent(fanzaSearch)}`;
-
   const text = mode === "calm" ? "詳しく調べる" : "映像を見る";
   document.getElementById("link-area").innerHTML = `<a href="${link}" target="_blank">${text}</a>`;
 

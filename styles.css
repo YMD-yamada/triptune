@@ -11,9 +11,4 @@ button {
   font-size: 10px;
   opacity: 0.2;
 }
-#mode-toggle button {
-  padding: 4px 6px;
-  font-size: 10px;
-  background: #444;
-}
 #invite-area p {font-size: 14px; color: #444; margin: 20px;}
