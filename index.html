@@ -8,24 +8,76 @@
   <link rel="stylesheet" href="styles.css">
   <meta name="robots" content="noindex">
 </head>
-<body>
-  <main class="container">
-    <h1>TripTune</h1>
-    <p>気分で旅先診断</p>
-    <div id="question-area">
-      <div id="question-text"></div>
-      <div id="answers"></div>
-    </div>
-    <div id="result" class="hidden">
-      <h2 id="destination"></h2>
-      <p id="desc"></p>
-      <div id="link-area"></div>
-      <div id="invite-area" class="hidden">
-        <p>さらに刺激的な旅の提案を見てみますか？</p>
-        <button onclick="redirectToVivid()">切り替える</button>
+<body data-mode="calm">
+  <main class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">TRIP DIAGNOSIS</p>
+      <div class="hero-row">
+        <h1>TripTune</h1>
+        <button id="mode-switch" class="mode-switch" type="button" aria-live="polite"></button>
       </div>
-    </div>
+      <p class="hero-copy">
+        質問に答えるだけで、今の気分に合う「旅」の解釈を提案します。
+        通常モードは観光検索へ、大人モードは夜のキーワード探索へ。
+      </p>
+    </header>
+
+    <section id="intro-screen" class="panel">
+      <h2>気分で旅先診断</h2>
+      <p>
+        単純な分岐ではなく、選んだ答えのニュアンスをスコア化して旅先を提案します。
+        まずは5つの質問で、今のテンションを教えてください。
+      </p>
+      <button id="start-btn" class="primary-btn" type="button">診断をはじめる</button>
+    </section>
+
+    <section id="quiz-screen" class="panel hidden" aria-live="polite">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span id="progress-step">Q1 / Q5</span>
+          <button id="back-btn" class="ghost-btn" type="button">1つ戻る</button>
+        </div>
+        <div class="progress-bar">
+          <span id="progress-fill"></span>
+        </div>
+      </div>
+
+      <article class="question-card">
+        <p id="question-label" class="question-label">Question</p>
+        <h2 id="question-text"></h2>
+        <p id="question-hint" class="question-hint"></p>
+      </article>
+
+      <div id="answers" class="answers-grid"></div>
+    </section>
+
+    <section id="result-screen" class="panel hidden" aria-live="polite">
+      <p class="result-kicker">あなたに合う旅先</p>
+      <h2 id="destination"></h2>
+      <p id="desc" class="result-desc"></p>
+
+      <div class="result-block">
+        <h3>この提案になった理由</h3>
+        <ul id="reasons" class="reason-list"></ul>
+      </div>
+
+      <div class="result-block">
+        <h3>おすすめの楽しみ方</h3>
+        <p id="plan-copy"></p>
+      </div>
+
+      <div class="cta-row">
+        <a id="search-link" class="primary-btn" href="#" target="_blank" rel="noopener noreferrer"></a>
+        <button id="retry-btn" class="ghost-btn" type="button">もう一度診断する</button>
+      </div>
+
+      <div id="invite-area" class="invite hidden">
+        <p>この結果を「大人モード」に変換して、夜の旅ワードでも見てみますか？</p>
+        <button id="invite-btn" class="secondary-btn" type="button">大人モードで見る</button>
+      </div>
+    </section>
   </main>
+
   <script src="app.js"></script>
 </body>
 </html>
