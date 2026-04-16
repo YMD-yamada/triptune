@@ -1,4 +1,4 @@
-# Deploys the static site to Netlify on every push to `main`.
+# Deploys the static site to Netlify on every push to `main` or `master`.
 #
 # Setup (one-time):
 # 1) Netlify: Site settings → General → Site details → copy "Site ID"
@@ -16,6 +16,7 @@ on:
   push:
     branches:
       - main
+      - master
   workflow_dispatch:
 
 permissions:

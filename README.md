@@ -23,4 +23,4 @@
 - `NETLIFY_AUTH_TOKEN`
 - `NETLIFY_SITE_ID`
 
-`main` ブランチへの push で本番デプロイが走ります。
+`main` または `master` ブランチへの push で本番デプロイが走ります。
