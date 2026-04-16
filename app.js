@@ -93,7 +93,7 @@ const destinations = [
     calmPlan: "広い自然の中で温泉やローカルグルメをゆっくり巡る旅。",
     vividTag: "雪夜 ロマンス",
     badge: "王道リトリート",
-    scene: "温泉と雪景色で気持ちをほぐしたい日に相性抜群。",
+    scene: "温泉と雪景色で気持ちをほぐしたい日に向きやすいムードです。",
     actions: ["朝風呂のある宿を探す", "ローカルグルメを3つ候補に入れる", "移動時間も景色として楽しむ"],
     image: "ALPINE AIR"
   },
@@ -113,7 +113,7 @@ const destinations = [
     calmPlan: "海辺で解放感を感じながら、島時間で心拍を整える旅。",
     vividTag: "南国 甘美バカンス",
     badge: "開放感リゾート",
-    scene: "考え込みすぎず、体をゆるめる休日を作りたい時に最適。",
+    scene: "考え込みすぎず、体をゆるめる休日を作りたい時に寄せやすいムードです。",
     actions: ["サンセットが見える場所を押さえる", "移動は少なめにして海辺時間を確保する", "島グルメを主役にする"],
     image: "SEA ESCAPE"
   },
@@ -185,7 +185,18 @@ const premiumForm = document.getElementById("premium-form");
 const premiumEmail = document.getElementById("premium-email");
 const premiumFeedback = document.getElementById("premium-feedback");
 const historyList = document.getElementById("history-list");
+const miniItineraryEl = document.getElementById("mini-itinerary");
+const altDestinationsEl = document.getElementById("alt-destinations");
+const shareImageBtn = document.getElementById("share-image-btn");
+const compareFavoritesBtn = document.getElementById("compare-favorites-btn");
+const compareFeedback = document.getElementById("compare-feedback");
 let latestShareText = "";
+
+function setFeedback(el, message) {
+  if (el) {
+    el.textContent = message;
+  }
+}
 
 function loadFavorites() {
   try {
@@ -274,9 +285,10 @@ function resetQuiz() {
   state.picks = [];
   state.result = null;
   latestShareText = "";
-  shareFeedback.textContent = "";
-  favoriteFeedback.textContent = "";
-  premiumFeedback.textContent = "";
+  setFeedback(shareFeedback, "");
+  setFeedback(favoriteFeedback, "");
+  setFeedback(premiumFeedback, "");
+  setFeedback(compareFeedback, "");
   openScreen(introScreen);
   renderSelectionTrail();
 }
@@ -332,6 +344,9 @@ function selectedSummary() {
 }
 
 function renderSelectionTrail() {
+  if (!selectionTrail) {
+    return;
+  }
   selectionTrail.innerHTML = "";
   if (state.picks.length === 0) {
     const empty = document.createElement("span");
@@ -350,6 +365,9 @@ function renderSelectionTrail() {
 }
 
 function renderPickChips() {
+  if (!picksListEl) {
+    return;
+  }
   picksListEl.innerHTML = "";
   state.picks.forEach((pick, index) => {
     const chip = document.createElement("span");
@@ -360,9 +378,14 @@ function renderPickChips() {
 }
 
 function renderCard(destination, topSignals) {
+  if (!cardDestinationEl || !cardCopyEl || !cardTagsEl) {
+    return;
+  }
   cardDestinationEl.textContent = destination.name;
   cardCopyEl.textContent = `${mode === "vivid" ? "夜のムードまで含めて" : "今の気分に寄り添って"}、${destination.name} がしっくりきています。`;
-  heroVisualText.textContent = destination.image;
+  if (heroVisualText) {
+    heroVisualText.textContent = destination.image;
+  }
   cardTagsEl.innerHTML = "";
   topSignals.forEach(([signal]) => {
     const tag = document.createElement("span");
@@ -373,20 +396,27 @@ function renderCard(destination, topSignals) {
 }
 
 function renderCompareList(ranked) {
+  if (!compareList) {
+    return;
+  }
   compareList.innerHTML = "";
-  ranked.slice(1, 3).forEach((item) => {
+  ranked.slice(0, 3).forEach((item, index) => {
     const card = document.createElement("div");
     card.className = "compare-card";
+    const label = index === 0 ? "メイン提案" : `候補 ${index}`;
     card.innerHTML = `
       <strong>${item.name}</strong>
-      <span>${item.badge}</span>
-      <p>${item.scene}</p>
+      <span>${label} / スコア感 ${item.match}</span>
+      <p>${item.badge} — ${item.scene}</p>
     `;
     compareList.appendChild(card);
   });
 }
 
 function renderPlanChecklist(destination) {
+  if (!planChecklist) {
+    return;
+  }
   planChecklist.innerHTML = "";
   destination.actions.forEach((action) => {
     const li = document.createElement("li");
@@ -395,7 +425,72 @@ function renderPlanChecklist(destination) {
   });
 }
 
+function pickByQuestionId(id) {
+  const index = questions.findIndex((q) => q.id === id);
+  if (index === -1) {
+    return null;
+  }
+  return state.picks[index] || null;
+}
+
+function buildDailyItinerary(destination, score) {
+  const pace = pickByQuestionId("pace");
+  const company = pickByQuestionId("company");
+  const isNightHeavy = (score.night || 0) >= 6;
+  const isRelaxHeavy = (score.relax || 0) >= 8;
+
+  const slots = [];
+
+  if (pace?.label === "夜型" || isNightHeavy) {
+    slots.push({ time: "昼", text: `${destination.name} の中心部で軽く食べて、カフェか美術館で体温を下げる。` });
+    slots.push({ time: "夕方", text: "移動は短めにして、夕景がきれいなエリアへ寄り道する。" });
+    slots.push({ time: "夜", text: "夜景やネオン、落ち着いたバーなど、夜の密度を選んで締める。" });
+  } else if (pace?.label === "のんびり" || isRelaxHeavy) {
+    slots.push({ time: "朝", text: "朝食は近場で済ませ、無理のない出発時間にする。" });
+    slots.push({ time: "昼", text: `${destination.name} で「歩くより座る」時間を多めに取る。` });
+    slots.push({ time: "夕方", text: "温泉・公園・海辺など、呼吸が深くなる場所で締める。" });
+  } else {
+    slots.push({ time: "朝", text: `${destination.name} のメインエリアに早めに入り、混雑前に動く。` });
+    slots.push({ time: "昼", text: "展示・展望・市場など、体感で楽しめるスポットを1つ厚めに入れる。" });
+    slots.push({ time: "夕方", text: company?.label === "恋人" ? "景色の良い通りをゆっくり歩いて締める。" : "ご当地グルメで締め、翌日に備えて早めに休む。" });
+  }
+
+  return slots;
+}
+
+function renderMiniItinerary(destination, score) {
+  if (!miniItineraryEl) {
+    return;
+  }
+  miniItineraryEl.innerHTML = "";
+  buildDailyItinerary(destination, score).forEach((slot) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${slot.time}</strong> ${slot.text}`;
+    miniItineraryEl.appendChild(li);
+  });
+}
+
+function renderAltDestinations(ranked) {
+  if (!altDestinationsEl) {
+    return;
+  }
+  altDestinationsEl.innerHTML = "";
+  ranked.slice(1, 4).forEach((item) => {
+    const card = document.createElement("div");
+    card.className = "alt-destination-card";
+    card.innerHTML = `
+      <strong>${item.name}</strong>
+      <span class="alt-meta">${item.badge} / スコア感 ${item.match}</span>
+      <p class="alt-meta">${item.scene}</p>
+    `;
+    altDestinationsEl.appendChild(card);
+  });
+}
+
 function renderHistory() {
+  if (!historyList) {
+    return;
+  }
   const history = loadHistory();
   historyList.innerHTML = "";
 
@@ -422,6 +517,9 @@ function renderHistory() {
 }
 
 function renderFavorites() {
+  if (!favoritesList) {
+    return;
+  }
   const favorites = loadFavorites();
   favoritesList.innerHTML = "";
 
@@ -451,18 +549,23 @@ function renderFavorites() {
       const favoritesNext = loadFavorites();
       favoritesNext.splice(Number(button.dataset.index), 1);
       saveFavorites(favoritesNext);
-      favoriteFeedback.textContent = "お気に入りから削除しました。";
+      setFeedback(favoriteFeedback, "お気に入りから削除しました。");
       renderFavorites();
     });
   });
 }
 
 function updateConfidence(topSignals) {
+  if (!confidenceMeter || !confidenceLabel) {
+    return;
+  }
   const total = topSignals.reduce((sum, [, point]) => sum + point, 0) || 1;
   const best = topSignals[0]?.[1] || 0;
-  const ratio = Math.min(100, Math.round((best / total) * 160));
-  confidenceMeter.style.width = `${ratio}%`;
-  confidenceLabel.textContent = `診断フィット率 ${ratio}%`;
+  const second = topSignals[1]?.[1] || 0;
+  const spread = Math.max(0, best - second);
+  const clarity = Math.min(100, Math.round((best / total) * 55 + spread * 8));
+  confidenceMeter.style.width = `${clarity}%`;
+  confidenceLabel.textContent = `回答の傾向のはっきり度（参考） ${clarity}% — 科学的な正答率ではありません。`;
 }
 
 function updateProgress() {
@@ -475,8 +578,9 @@ function updateProgress() {
 
 function showQuestion() {
   openScreen(quizScreen);
-  shareFeedback.textContent = "";
-  favoriteFeedback.textContent = "";
+  setFeedback(shareFeedback, "");
+  setFeedback(favoriteFeedback, "");
+  setFeedback(compareFeedback, "");
   const q = questions[state.step];
   questionLabel.textContent = `Question ${state.step + 1}`;
   questionText.textContent = q.text;
@@ -516,7 +620,7 @@ function goBack() {
 
 function resultDescription(placeName, score) {
   const top = getTopSignals(score, 2).map(([key]) => reasonText(key, score[key]).split("（")[0]);
-  return `あなたの旅テンションは「${top.join(" × ")}」タイプ。今は ${placeName} が最も噛み合います。`;
+  return `あなたの旅テンションは「${top.join(" × ")}」タイプ。今回の回答では ${placeName} がいちばん近いイメージです（エンタメ提案）。`;
 }
 
 function buildSearchLink(destination, score) {
@@ -536,6 +640,10 @@ function buildSearchLink(destination, score) {
   };
 }
 
+function shareDisclaimer() {
+  return "※ 診断はエンタメ用途です。予約・割引・科学的な正答率とは無関係です。";
+}
+
 function buildSharePayload() {
   if (!state.result) {
     return null;
@@ -552,6 +660,7 @@ function buildSharePayload() {
       state.result.description,
       `選択: ${selectedSummary()}`,
       `おすすめ: ${state.result.destination.calmPlan}`,
+      shareDisclaimer(),
       url.toString()
     ].join("\n")
   };
@@ -560,46 +669,57 @@ function buildSharePayload() {
 async function shareResult() {
   const payload = buildSharePayload();
   if (!payload) {
-    shareFeedback.textContent = "先に診断結果を作成してください。";
+    setFeedback(shareFeedback, "先に診断結果を作成してください。");
     return;
   }
 
   try {
+    let file = null;
+    try {
+      file = await buildShareCardPngFile();
+    } catch (e) {
+      file = null;
+    }
+
     if (navigator.share) {
-      await navigator.share(payload);
-      shareFeedback.textContent = "シェア画面を開きました。";
+      const shareData = { ...payload };
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        shareData.files = [file];
+      }
+      await navigator.share(shareData);
+      setFeedback(shareFeedback, "シェア画面を開きました。");
       return;
     }
 
     await navigator.clipboard.writeText(payload.text);
-    shareFeedback.textContent = "結果テキストをコピーしました。SNSに貼り付けて共有できます。";
+    setFeedback(shareFeedback, "結果テキストをコピーしました。SNSに貼り付けて共有できます。");
   } catch (error) {
-    shareFeedback.textContent = "シェアに失敗しました。もう一度お試しください。";
+    setFeedback(shareFeedback, "シェアに失敗しました。もう一度お試しください。");
   }
 }
 
 async function copyShareText() {
   if (!latestShareText) {
-    shareFeedback.textContent = "先に診断結果を作成してください。";
+    setFeedback(shareFeedback, "先に診断結果を作成してください。");
     return;
   }
   try {
     await navigator.clipboard.writeText(latestShareText);
-    shareFeedback.textContent = "結果テキストをコピーしました。";
+    setFeedback(shareFeedback, "結果テキストをコピーしました。");
   } catch (error) {
-    shareFeedback.textContent = "コピーに失敗しました。";
+    setFeedback(shareFeedback, "コピーに失敗しました。");
   }
 }
 
 function updateShareLink() {
   const shareUrl = new URL("https://twitter.com/intent/tweet");
-  shareUrl.searchParams.set("text", latestShareText);
+  shareUrl.searchParams.set("text", `${latestShareText}\n${shareDisclaimer()}`);
   shareXLink.href = shareUrl.toString();
 }
 
 function saveCurrentFavorite() {
   if (!state.result) {
-    favoriteFeedback.textContent = "先に診断結果を作成してください。";
+    setFeedback(favoriteFeedback, "先に診断結果を作成してください。");
     return;
   }
 
@@ -615,13 +735,13 @@ function saveCurrentFavorite() {
   });
 
   if (exists) {
-    favoriteFeedback.textContent = "この結果はすでに保存されています。";
+    setFeedback(favoriteFeedback, "この結果はすでに保存されています。");
     return;
   }
 
   favorites.unshift(item);
   saveFavorites(favorites.slice(0, 6));
-  favoriteFeedback.textContent = "お気に入りに保存しました。";
+  setFeedback(favoriteFeedback, "お気に入りに保存しました。");
   renderFavorites();
 }
 
@@ -640,15 +760,144 @@ function saveHistoryEntry(destination, topSignals) {
 
 function submitPremiumLead(event) {
   event.preventDefault();
+  if (!premiumEmail || !premiumFeedback) {
+    return;
+  }
   const email = premiumEmail.value.trim();
 
   if (!email || !email.includes("@")) {
-    premiumFeedback.textContent = "メールアドレスを入力してください。";
+    setFeedback(premiumFeedback, "メールアドレスを入力してください。");
     return;
   }
 
   localStorage.setItem(premiumEmailKey, email);
-  premiumFeedback.textContent = "先行案内リストに登録しました。限定プランの案内に使えます。";
+  setFeedback(
+    premiumFeedback,
+    "このデモではメールは端末内にだけ保存され、送信はしていません。本番では送信先APIと利用規約を接続してください。"
+  );
+}
+
+function compareFavoritesAsText() {
+  const favorites = loadFavorites();
+  if (favorites.length < 2) {
+    setFeedback(compareFeedback, "比較するには、お気に入りを2件以上保存してください。");
+    return;
+  }
+
+  const lines = favorites.map((item, index) => {
+    return `${index + 1}. ${item.destination}（${item.modeLabel}）— ${item.summary}`;
+  });
+  setFeedback(compareFeedback, lines.join(" / "));
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split("");
+  const lines = [];
+  let line = "";
+
+  words.forEach((char) => {
+    const test = line + char;
+    if (ctx.measureText(test).width > maxWidth && line.length > 0) {
+      lines.push(line);
+      line = char;
+    } else {
+      line = test;
+    }
+  });
+
+  if (line) {
+    lines.push(line);
+  }
+  return lines;
+}
+
+async function buildShareCardPngFile() {
+  if (!state.result) {
+    return null;
+  }
+
+  const width = 1080;
+  const height = 1350;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+
+  const gradient = ctx.createLinearGradient(0, 0, width, height);
+  if (mode === "vivid") {
+    gradient.addColorStop(0, "#2a103f");
+    gradient.addColorStop(1, "#ff3d9b");
+  } else {
+    gradient.addColorStop(0, "#1f2b6c");
+    gradient.addColorStop(1, "#6f7dff");
+  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.font = "600 36px 'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif";
+  ctx.fillText("TripTune", 80, 120);
+
+  ctx.font = "700 84px 'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif";
+  const title = state.result.destination.name;
+  wrapText(ctx, title, width - 160).forEach((line, i) => {
+    ctx.fillText(line, 80, 240 + i * 96);
+  });
+
+  ctx.font = "400 40px 'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif";
+  const body = state.result.description;
+  const bodyLines = wrapText(ctx, body, width - 160);
+  bodyLines.slice(0, 5).forEach((line, i) => {
+    ctx.fillText(line, 80, 420 + i * 58);
+  });
+
+  ctx.font = "400 32px 'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.82)";
+  const tags = state.result.topSignals.map(([s]) => topSignalWord(s)).join(" · ");
+  wrapText(ctx, tags, width - 160).forEach((line, i) => {
+    ctx.fillText(line, 80, 760 + i * 48);
+  });
+
+  ctx.font = "400 28px 'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+  wrapText(ctx, shareDisclaimer(), width - 160).forEach((line, i) => {
+    ctx.fillText(line, 80, height - 140 + i * 40);
+  });
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  if (!blob) {
+    return null;
+  }
+
+  return new File([blob], `triptune-${state.result.destination.name}.png`, { type: "image/png" });
+}
+
+async function downloadShareCardPng() {
+  if (!state.result) {
+    setFeedback(shareFeedback, "先に診断結果を作成してください。");
+    return;
+  }
+
+  try {
+    const file = await buildShareCardPngFile();
+    if (!file) {
+      setFeedback(shareFeedback, "画像の生成に失敗しました。");
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = file.name;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    setFeedback(shareFeedback, "PNGを保存しました。SNSに貼る前に内容をご確認ください。");
+  } catch (error) {
+    setFeedback(shareFeedback, "画像の保存に失敗しました。");
+  }
 }
 
 function showResult() {
@@ -661,9 +910,19 @@ function showResult() {
   const description = resultDescription(destination.name, score);
 
   destinationEl.textContent = destination.name;
-  destinationBadge.textContent = destination.badge;
+  if (destinationBadge) {
+    if (destination.badge) {
+      destinationBadge.hidden = false;
+      destinationBadge.textContent = destination.badge;
+    } else {
+      destinationBadge.hidden = true;
+      destinationBadge.textContent = "";
+    }
+  }
   descEl.textContent = description;
-  tripSceneEl.textContent = destination.scene;
+  if (tripSceneEl) {
+    tripSceneEl.textContent = destination.scene;
+  }
   planCopyEl.textContent = `${destination.calmPlan}（選択: ${selectedSummary()}）`;
   searchLink.href = linkData.href;
   searchLink.textContent = linkData.label;
@@ -671,9 +930,12 @@ function showResult() {
   renderCard(destination, topSignals);
   renderCompareList(rankedDestinations);
   renderPlanChecklist(destination);
+  renderMiniItinerary(destination, score);
+  renderAltDestinations(rankedDestinations);
   updateConfidence(topSignals);
-  shareFeedback.textContent = "";
-  favoriteFeedback.textContent = "";
+  setFeedback(shareFeedback, "");
+  setFeedback(favoriteFeedback, "");
+  setFeedback(compareFeedback, "");
   latestShareText = [
     "TripTune 診断結果",
     `旅先: ${destination.name}`,
@@ -681,7 +943,8 @@ function showResult() {
     description,
     `理由: ${topText}`,
     `選択: ${selectedSummary()}`,
-    `おすすめ: ${destination.scene}`
+    `おすすめ: ${destination.scene}`,
+    shareDisclaimer()
   ].join("\n");
   updateShareLink();
   state.result = { destination, score, topSignals, description };
@@ -708,18 +971,26 @@ function showResult() {
   resultScreen.classList.add("result-animate");
 }
 
-document.getElementById("start-btn").addEventListener("click", showQuestion);
-document.getElementById("retry-btn").addEventListener("click", resetQuiz);
-document.getElementById("back-btn").addEventListener("click", goBack);
-document.getElementById("invite-btn").addEventListener("click", () => {
+function bindIf(element, eventName, handler) {
+  if (element) {
+    element.addEventListener(eventName, handler);
+  }
+}
+
+bindIf(document.getElementById("start-btn"), "click", showQuestion);
+bindIf(document.getElementById("retry-btn"), "click", resetQuiz);
+bindIf(document.getElementById("back-btn"), "click", goBack);
+bindIf(document.getElementById("invite-btn"), "click", () => {
   setMode("vivid");
   showResult();
 });
-shareNativeBtn.addEventListener("click", shareResult);
-shareCopyBtn.addEventListener("click", copyShareText);
-favoriteBtn.addEventListener("click", saveCurrentFavorite);
-premiumForm.addEventListener("submit", submitPremiumLead);
-modeSwitch.addEventListener("click", () => {
+bindIf(shareNativeBtn, "click", shareResult);
+bindIf(shareCopyBtn, "click", copyShareText);
+bindIf(shareImageBtn, "click", downloadShareCardPng);
+bindIf(favoriteBtn, "click", saveCurrentFavorite);
+bindIf(compareFavoritesBtn, "click", compareFavoritesAsText);
+bindIf(premiumForm, "submit", submitPremiumLead);
+bindIf(modeSwitch, "click", () => {
   setMode(mode === "calm" ? "vivid" : "calm");
   if (!resultScreen.classList.contains("hidden") && state.picks.length === questions.length) {
     showResult();
