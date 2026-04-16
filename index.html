@@ -48,30 +48,45 @@
         <p id="question-hint" class="question-hint"></p>
       </article>
 
+      <div class="trail-wrap">
+        <p class="trail-label">選択中の旅ログ</p>
+        <div id="selection-trail" class="trail-chips"></div>
+      </div>
+
       <div id="answers" class="answers-grid"></div>
     </section>
 
     <section id="result-screen" class="panel hidden" aria-live="polite">
-      <p class="result-kicker">あなたに合う旅先</p>
-      <h2 id="destination"></h2>
-      <p id="desc" class="result-desc"></p>
+      <p class="result-kicker result-item" style="--delay: 0ms;">あなたに合う旅先</p>
+      <h2 id="destination" class="result-item" style="--delay: 60ms;"></h2>
+      <p id="desc" class="result-desc result-item" style="--delay: 120ms;"></p>
 
-      <div class="result-block">
+      <div class="result-block result-item" style="--delay: 180ms;">
         <h3>この提案になった理由</h3>
         <ul id="reasons" class="reason-list"></ul>
       </div>
 
-      <div class="result-block">
+      <div class="result-block result-item" style="--delay: 240ms;">
         <h3>おすすめの楽しみ方</h3>
         <p id="plan-copy"></p>
       </div>
 
-      <div class="cta-row">
+      <div class="cta-row result-item" style="--delay: 300ms;">
         <a id="search-link" class="primary-btn" href="#" target="_blank" rel="noopener noreferrer"></a>
         <button id="retry-btn" class="ghost-btn" type="button">もう一度診断する</button>
       </div>
 
-      <div id="invite-area" class="invite hidden">
+      <div class="share-wrap result-item" style="--delay: 360ms;">
+        <h3>結果をシェアする</h3>
+        <div class="share-row">
+          <button id="share-native-btn" class="secondary-btn" type="button">シェアする</button>
+          <button id="share-copy-btn" class="ghost-btn" type="button">結果テキストをコピー</button>
+          <a id="share-x-link" class="ghost-btn share-link" href="#" target="_blank" rel="noopener noreferrer">Xでシェア</a>
+        </div>
+        <p id="share-feedback" class="share-feedback" aria-live="polite"></p>
+      </div>
+
+      <div id="invite-area" class="invite hidden result-item" style="--delay: 420ms;">
         <p>この結果を「大人モード」に変換して、夜の旅ワードでも見てみますか？</p>
         <button id="invite-btn" class="secondary-btn" type="button">大人モードで見る</button>
       </div>

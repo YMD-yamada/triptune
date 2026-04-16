@@ -69,6 +69,10 @@ h1 {
   padding: clamp(20px, 4vw, 30px);
 }
 
+.result-animate {
+  animation: result-pop 0.42s ease both;
+}
+
 .hidden {
   display: none;
 }
@@ -228,6 +232,30 @@ h1 {
   line-height: 1.7;
 }
 
+.pick-strip {
+  margin: 0 0 14px;
+}
+
+.pick-strip h3 {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+}
+
+.pick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pick-chip {
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #eff3ff;
+  border: 1px solid #dbe4ff;
+  font-size: 12px;
+  line-height: 1.1;
+}
+
 .result-block {
   background: #f8f9ff;
   border: 1px solid #e4e9ff;
@@ -283,6 +311,25 @@ h1 {
   color: #4a4368;
 }
 
+.share-row {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.share-row .secondary-btn,
+.share-row .ghost-btn {
+  flex: 1 1 190px;
+}
+
+.share-status {
+  margin: 8px 0 0;
+  min-height: 1.2em;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+}
+
 body[data-mode="vivid"] {
   --bg: #150f24;
   --bg-accent: radial-gradient(circle at top right, #372355 0%, #1a1231 42%, #120d22 100%);
@@ -312,6 +359,22 @@ body[data-mode="vivid"] .invite {
   border-color: #5e4a8a;
 }
 
+body[data-mode="vivid"] .pick-chip {
+  background: #2f2254;
+  border-color: #5b4587;
+}
+
+@keyframes result-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 640px) {
   .app-shell {
     width: calc(100% - 20px);
@@ -337,6 +400,10 @@ body[data-mode="vivid"] .invite {
   }
 
   .cta-row {
+    flex-direction: column;
+  }
+
+  .share-row {
     flex-direction: column;
   }
 }

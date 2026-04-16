@@ -112,9 +112,13 @@ const destinationEl = document.getElementById("destination");
 const descEl = document.getElementById("desc");
 const reasonsEl = document.getElementById("reasons");
 const planCopyEl = document.getElementById("plan-copy");
+const picksListEl = document.getElementById("picks-list");
 const inviteArea = document.getElementById("invite-area");
 const searchLink = document.getElementById("search-link");
 const modeSwitch = document.getElementById("mode-switch");
+const shareBtn = document.getElementById("share-btn");
+const shareStatus = document.getElementById("share-status");
+let latestShareText = "";
 
 function setMode(nextMode, updateUrl = true) {
   mode = nextMode === "vivid" ? "vivid" : "calm";
@@ -149,6 +153,8 @@ function openScreen(screen) {
 function resetQuiz() {
   state.step = 0;
   state.picks = [];
+  latestShareText = "";
+  shareStatus.textContent = "";
   openScreen(introScreen);
 }
 
@@ -202,6 +208,16 @@ function selectedSummary() {
   return state.picks.map((pick) => pick.label).join(" / ");
 }
 
+function renderPickChips() {
+  picksListEl.innerHTML = "";
+  state.picks.forEach((pick, index) => {
+    const chip = document.createElement("li");
+    chip.className = "pick-chip";
+    chip.textContent = `Q${index + 1}: ${pick.label}`;
+    picksListEl.appendChild(chip);
+  });
+}
+
 function updateProgress() {
   const total = questions.length;
   progressStep.textContent = `Q${state.step + 1} / Q${total}`;
@@ -212,6 +228,7 @@ function updateProgress() {
 
 function showQuestion() {
   openScreen(quizScreen);
+  shareStatus.textContent = "";
   const q = questions[state.step];
   questionLabel.textContent = `Question ${state.step + 1}`;
   questionText.textContent = q.text;
@@ -282,17 +299,50 @@ function buildSearchLink(destination, score) {
   };
 }
 
+async function shareResult() {
+  if (!latestShareText) {
+    shareStatus.textContent = "先に診断結果を作成してください。";
+    return;
+  }
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: "TripTune 診断結果",
+        text: latestShareText
+      });
+      shareStatus.textContent = "シェア画面を開きました。";
+      return;
+    }
+
+    await navigator.clipboard.writeText(latestShareText);
+    shareStatus.textContent = "結果テキストをコピーしました。SNSに貼り付けて共有できます。";
+  } catch (error) {
+    shareStatus.textContent = "シェアに失敗しました。もう一度お試しください。";
+  }
+}
+
 function showResult() {
   const score = buildScore();
   const destination = chooseDestination(score);
   const topSignals = getTopSignals(score, 3);
   const linkData = buildSearchLink(destination, score);
+  const topText = topSignals.map(([signal, point]) => reasonText(signal, point)).join(" / ");
 
   destinationEl.textContent = destination.name;
   descEl.textContent = resultDescription(destination.name, score);
   planCopyEl.textContent = `${destination.calmPlan}（選択: ${selectedSummary()}）`;
   searchLink.href = linkData.href;
   searchLink.textContent = linkData.label;
+  renderPickChips();
+  shareStatus.textContent = "";
+  latestShareText = [
+    "TripTune 診断結果",
+    `旅先: ${destination.name}`,
+    descEl.textContent,
+    `理由: ${topText}`,
+    `選択: ${selectedSummary()}`
+  ].join("\n");
 
   reasonsEl.innerHTML = "";
   topSignals.forEach(([signal, point]) => {
@@ -309,6 +359,9 @@ function showResult() {
 
   progressFill.style.width = "100%";
   openScreen(resultScreen);
+  resultScreen.classList.remove("result-animate");
+  void resultScreen.offsetWidth;
+  resultScreen.classList.add("result-animate");
 }
 
 document.getElementById("start-btn").addEventListener("click", showQuestion);
@@ -317,6 +370,9 @@ document.getElementById("back-btn").addEventListener("click", goBack);
 document.getElementById("invite-btn").addEventListener("click", () => {
   setMode("vivid");
   showResult();
+});
+shareBtn.addEventListener("click", () => {
+  shareResult();
 });
 modeSwitch.addEventListener("click", () => {
   setMode(mode === "calm" ? "vivid" : "calm");
