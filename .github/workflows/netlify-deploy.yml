@@ -1,0 +1,53 @@
+# Deploys the static site to Netlify on every push to `main` or `master`.
+#
+# Setup (one-time):
+# 1) Netlify: Site settings → General → Site details → copy "Site ID"
+# 2) Netlify: User settings → Applications → Personal access tokens → create token
+# 3) GitHub repo: Settings → Secrets and variables → Actions → add:
+#    - NETLIFY_AUTH_TOKEN
+#    - NETLIFY_SITE_ID
+#
+# Alternative (no GitHub Actions): connect the repo in Netlify UI and leave
+# build command empty with publish directory "." — this workflow is optional.
+
+name: Deploy to Netlify
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: netlify-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Deploy (production)
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NETLIFY_AUTH_TOKEN:-}" ] || [ -z "${NETLIFY_SITE_ID:-}" ]; then
+            echo "Missing NETLIFY_AUTH_TOKEN or NETLIFY_SITE_ID GitHub Actions secrets."
+            echo "Add them in: Repo → Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+
+          npx --yes netlify-cli deploy --prod --dir .
