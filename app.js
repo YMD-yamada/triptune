@@ -3,6 +3,8 @@ const params = new URLSearchParams(location.search);
 let mode = params.get("mode") === "vivid" ? "vivid" : "calm";
 
 const storageKey = "triptune-favorites";
+const historyKey = "triptune-history";
+const premiumEmailKey = "triptune-premium-email";
 
 const questions = [
   {
@@ -89,31 +91,51 @@ const destinations = [
     name: "北海道",
     profile: { nature: 3, relax: 2, mountain: 2, culture: 1 },
     calmPlan: "広い自然の中で温泉やローカルグルメをゆっくり巡る旅。",
-    vividTag: "雪夜 ロマンス"
+    vividTag: "雪夜 ロマンス",
+    badge: "王道リトリート",
+    scene: "温泉と雪景色で気持ちをほぐしたい日に相性抜群。",
+    actions: ["朝風呂のある宿を探す", "ローカルグルメを3つ候補に入れる", "移動時間も景色として楽しむ"],
+    image: "ALPINE AIR"
   },
   {
     name: "東京",
     profile: { city: 3, thrill: 2, culture: 2, night: 2 },
     calmPlan: "昼はアートや街歩き、夜はネオン散策で刺激を回収する旅。",
-    vividTag: "都会 密室スリル"
+    vividTag: "都会 密室スリル",
+    badge: "高密度シティ",
+    scene: "感度の高いスポットをはしごしたい日に強い選択肢。",
+    actions: ["エリアを2つに絞って回遊する", "昼は展示、夜は夜景の導線を組む", "予約が必要な店を1つ入れる"],
+    image: "CITY LIGHT"
   },
   {
     name: "沖縄",
     profile: { sea: 3, relax: 2, romance: 2, thrill: 1 },
     calmPlan: "海辺で解放感を感じながら、島時間で心拍を整える旅。",
-    vividTag: "南国 甘美バカンス"
+    vividTag: "南国 甘美バカンス",
+    badge: "開放感リゾート",
+    scene: "考え込みすぎず、体をゆるめる休日を作りたい時に最適。",
+    actions: ["サンセットが見える場所を押さえる", "移動は少なめにして海辺時間を確保する", "島グルメを主役にする"],
+    image: "SEA ESCAPE"
   },
   {
     name: "長野",
     profile: { mountain: 3, nature: 2, relax: 1, culture: 2 },
     calmPlan: "高原と温泉、地元文化を組み合わせて静かな達成感を得る旅。",
-    vividTag: "秘湯 禁断トリップ"
+    vividTag: "秘湯 禁断トリップ",
+    badge: "深呼吸マウンテン",
+    scene: "空気の軽さや景色の抜け感で頭を切り替えたい人向け。",
+    actions: ["朝の散歩ルートを先に決める", "温泉とカフェをセットで組む", "景色が良い時間帯に合わせて移動する"],
+    image: "MOUNTAIN CALM"
   },
   {
     name: "神戸",
     profile: { romance: 3, city: 2, culture: 2, night: 1 },
     calmPlan: "港町の夜景と洋館エリアを巡り、少し背伸びした旅時間を楽しむ。",
-    vividTag: "港町 艶めきデート"
+    vividTag: "港町 艶めきデート",
+    badge: "ムード先行型",
+    scene: "景色・食・会話の3つを心地よく成立させたい日に向いています。",
+    actions: ["夕暮れに港側へ寄る", "雰囲気の良いカフェを1軒予約する", "写真が映える通りを散歩する"],
+    image: "HARBOR MOOD"
   }
 ];
 
@@ -152,6 +174,17 @@ const shareFeedback = document.getElementById("share-feedback");
 const favoriteBtn = document.getElementById("favorite-btn");
 const favoriteFeedback = document.getElementById("favorite-feedback");
 const favoritesList = document.getElementById("favorites-list");
+const compareList = document.getElementById("compare-list");
+const tripSceneEl = document.getElementById("trip-scene");
+const planChecklist = document.getElementById("plan-checklist");
+const confidenceMeter = document.getElementById("confidence-meter");
+const confidenceLabel = document.getElementById("confidence-label");
+const destinationBadge = document.getElementById("destination-badge");
+const heroVisualText = document.getElementById("hero-visual-text");
+const premiumForm = document.getElementById("premium-form");
+const premiumEmail = document.getElementById("premium-email");
+const premiumFeedback = document.getElementById("premium-feedback");
+const historyList = document.getElementById("history-list");
 let latestShareText = "";
 
 function loadFavorites() {
@@ -164,6 +197,18 @@ function loadFavorites() {
 
 function saveFavorites(items) {
   localStorage.setItem(storageKey, JSON.stringify(items));
+}
+
+function loadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(historyKey) || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveHistory(items) {
+  localStorage.setItem(historyKey, JSON.stringify(items));
 }
 
 function topSignalWord(signal) {
@@ -181,6 +226,17 @@ function topSignalWord(signal) {
   };
 
   return signalWordMap[signal] || "旅";
+}
+
+function modeLabel() {
+  return mode === "vivid" ? "大人モード" : "通常モード";
+}
+
+function ensurePremiumEmail() {
+  const stored = localStorage.getItem(premiumEmailKey);
+  if (stored) {
+    premiumEmail.value = stored;
+  }
 }
 
 function setMode(nextMode, updateUrl = true) {
@@ -220,6 +276,7 @@ function resetQuiz() {
   latestShareText = "";
   shareFeedback.textContent = "";
   favoriteFeedback.textContent = "";
+  premiumFeedback.textContent = "";
   openScreen(introScreen);
   renderSelectionTrail();
 }
@@ -249,7 +306,7 @@ function chooseDestination(score) {
     })
     .sort((a, b) => b.match - a.match);
 
-  return ranked[0];
+  return ranked;
 }
 
 function reasonText(signal, point) {
@@ -305,12 +362,62 @@ function renderPickChips() {
 function renderCard(destination, topSignals) {
   cardDestinationEl.textContent = destination.name;
   cardCopyEl.textContent = `${mode === "vivid" ? "夜のムードまで含めて" : "今の気分に寄り添って"}、${destination.name} がしっくりきています。`;
+  heroVisualText.textContent = destination.image;
   cardTagsEl.innerHTML = "";
   topSignals.forEach(([signal]) => {
     const tag = document.createElement("span");
     tag.className = "card-tag";
     tag.textContent = topSignalWord(signal);
     cardTagsEl.appendChild(tag);
+  });
+}
+
+function renderCompareList(ranked) {
+  compareList.innerHTML = "";
+  ranked.slice(1, 3).forEach((item) => {
+    const card = document.createElement("div");
+    card.className = "compare-card";
+    card.innerHTML = `
+      <strong>${item.name}</strong>
+      <span>${item.badge}</span>
+      <p>${item.scene}</p>
+    `;
+    compareList.appendChild(card);
+  });
+}
+
+function renderPlanChecklist(destination) {
+  planChecklist.innerHTML = "";
+  destination.actions.forEach((action) => {
+    const li = document.createElement("li");
+    li.textContent = action;
+    planChecklist.appendChild(li);
+  });
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  historyList.innerHTML = "";
+
+  if (history.length === 0) {
+    const empty = document.createElement("span");
+    empty.className = "favorite-pill";
+    empty.textContent = "最近の診断はまだありません";
+    historyList.appendChild(empty);
+    return;
+  }
+
+  history.forEach((item) => {
+    const card = document.createElement("div");
+    card.className = "history-card";
+    card.innerHTML = `
+      <div>
+        <strong>${item.destination}</strong>
+        <p>${item.modeLabel} / ${item.createdAt}</p>
+      </div>
+      <span class="history-score">${item.signature}</span>
+    `;
+    historyList.appendChild(card);
   });
 }
 
@@ -348,6 +455,14 @@ function renderFavorites() {
       renderFavorites();
     });
   });
+}
+
+function updateConfidence(topSignals) {
+  const total = topSignals.reduce((sum, [, point]) => sum + point, 0) || 1;
+  const best = topSignals[0]?.[1] || 0;
+  const ratio = Math.min(100, Math.round((best / total) * 160));
+  confidenceMeter.style.width = `${ratio}%`;
+  confidenceLabel.textContent = `診断フィット率 ${ratio}%`;
 }
 
 function updateProgress() {
@@ -427,13 +542,13 @@ function buildSharePayload() {
   }
 
   const url = new URL(location.href);
-  const modeLabel = mode === "vivid" ? "大人モード" : "通常モード";
+  const currentModeLabel = modeLabel();
   return {
     title: "TripTune 診断結果",
     text: [
       "TripTune 診断結果",
       `旅先: ${state.result.destination.name}`,
-      `モード: ${modeLabel}`,
+      `モード: ${currentModeLabel}`,
       state.result.description,
       `選択: ${selectedSummary()}`,
       `おすすめ: ${state.result.destination.calmPlan}`,
@@ -492,7 +607,7 @@ function saveCurrentFavorite() {
   const item = {
     destination: state.result.destination.name,
     summary: selectedSummary(),
-    modeLabel: mode === "vivid" ? "大人モード" : "通常モード"
+    modeLabel: modeLabel()
   };
 
   const exists = favorites.some((favorite) => {
@@ -510,30 +625,63 @@ function saveCurrentFavorite() {
   renderFavorites();
 }
 
+function saveHistoryEntry(destination, topSignals) {
+  const history = loadHistory();
+  const entry = {
+    destination: destination.name,
+    modeLabel: modeLabel(),
+    signature: topSignals.map(([signal]) => topSignalWord(signal)).join(" / "),
+    createdAt: new Date().toLocaleDateString("ja-JP")
+  };
+  history.unshift(entry);
+  saveHistory(history.slice(0, 5));
+  renderHistory();
+}
+
+function submitPremiumLead(event) {
+  event.preventDefault();
+  const email = premiumEmail.value.trim();
+
+  if (!email || !email.includes("@")) {
+    premiumFeedback.textContent = "メールアドレスを入力してください。";
+    return;
+  }
+
+  localStorage.setItem(premiumEmailKey, email);
+  premiumFeedback.textContent = "先行案内リストに登録しました。限定プランの案内に使えます。";
+}
+
 function showResult() {
   const score = buildScore();
-  const destination = chooseDestination(score);
+  const rankedDestinations = chooseDestination(score);
+  const destination = rankedDestinations[0];
   const topSignals = getTopSignals(score, 3);
   const linkData = buildSearchLink(destination, score);
   const topText = topSignals.map(([signal, point]) => reasonText(signal, point)).join(" / ");
   const description = resultDescription(destination.name, score);
 
   destinationEl.textContent = destination.name;
+  destinationBadge.textContent = destination.badge;
   descEl.textContent = description;
+  tripSceneEl.textContent = destination.scene;
   planCopyEl.textContent = `${destination.calmPlan}（選択: ${selectedSummary()}）`;
   searchLink.href = linkData.href;
   searchLink.textContent = linkData.label;
   renderPickChips();
   renderCard(destination, topSignals);
+  renderCompareList(rankedDestinations);
+  renderPlanChecklist(destination);
+  updateConfidence(topSignals);
   shareFeedback.textContent = "";
   favoriteFeedback.textContent = "";
   latestShareText = [
     "TripTune 診断結果",
     `旅先: ${destination.name}`,
-    `モード: ${mode === "vivid" ? "大人モード" : "通常モード"}`,
+    `モード: ${modeLabel()}`,
     description,
     `理由: ${topText}`,
-    `選択: ${selectedSummary()}`
+    `選択: ${selectedSummary()}`,
+    `おすすめ: ${destination.scene}`
   ].join("\n");
   updateShareLink();
   state.result = { destination, score, topSignals, description };
@@ -554,6 +702,7 @@ function showResult() {
   progressFill.style.width = "100%";
   openScreen(resultScreen);
   renderFavorites();
+  saveHistoryEntry(destination, topSignals);
   resultScreen.classList.remove("result-animate");
   void resultScreen.offsetWidth;
   resultScreen.classList.add("result-animate");
@@ -569,6 +718,7 @@ document.getElementById("invite-btn").addEventListener("click", () => {
 shareNativeBtn.addEventListener("click", shareResult);
 shareCopyBtn.addEventListener("click", copyShareText);
 favoriteBtn.addEventListener("click", saveCurrentFavorite);
+premiumForm.addEventListener("submit", submitPremiumLead);
 modeSwitch.addEventListener("click", () => {
   setMode(mode === "calm" ? "vivid" : "calm");
   if (!resultScreen.classList.contains("hidden") && state.picks.length === questions.length) {
@@ -578,4 +728,6 @@ modeSwitch.addEventListener("click", () => {
 
 setMode(mode, false);
 renderFavorites();
+renderHistory();
+ensurePremiumEmail();
 resetQuiz();

@@ -13,13 +13,48 @@
     <header class="hero">
       <p class="eyebrow">TRIP DIAGNOSIS</p>
       <div class="hero-row">
-        <h1>TripTune</h1>
+        <div>
+          <h1>TripTune</h1>
+          <p class="hero-copy">
+            質問に答えるだけで、今の気分に合う「旅」の解釈を提案します。
+            通常モードは観光検索へ、大人モードは夜のキーワード探索へ。
+          </p>
+        </div>
         <button id="mode-switch" class="mode-switch" type="button" aria-live="polite"></button>
       </div>
-      <p class="hero-copy">
-        質問に答えるだけで、今の気分に合う「旅」の解釈を提案します。
-        通常モードは観光検索へ、大人モードは夜のキーワード探索へ。
-      </p>
+
+      <div class="hero-grid">
+        <section class="hero-card hero-card-primary">
+          <p class="hero-card-label">今日のおすすめ体験</p>
+          <h2>診断から、すぐ出かけられる。</h2>
+          <p>
+            気分診断、旅先提案、シェアカード、お気に入り保存までを1つの流れで体験できます。
+          </p>
+          <div class="hero-metrics">
+            <div class="metric">
+              <strong>7</strong>
+              <span>感性質問</span>
+            </div>
+            <div class="metric">
+              <strong>3</strong>
+              <span>旅の理由表示</span>
+            </div>
+            <div class="metric">
+              <strong>1 tap</strong>
+              <span>共有導線</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="hero-card">
+          <p class="hero-card-label">プレミアム構想</p>
+          <ul class="hero-list">
+            <li>旅先ごとのモデルコースを自動提案</li>
+            <li>お気に入り結果の比較保存</li>
+            <li>旅行予約・アフィリエイト導線に接続しやすい構成</li>
+          </ul>
+        </section>
+      </div>
     </header>
 
     <section id="intro-screen" class="panel">
@@ -32,6 +67,21 @@
         <span class="intro-chip">7つの質問</span>
         <span class="intro-chip">結果カード生成</span>
         <span class="intro-chip">お気に入り保存</span>
+        <span class="intro-chip">モデルプラン提案</span>
+      </div>
+      <div class="value-strip">
+        <article class="value-card">
+          <h3>気分に寄り添う</h3>
+          <p>単なる観光地一覧ではなく、「今の自分」に合う提案を返します。</p>
+        </article>
+        <article class="value-card">
+          <h3>すぐ共有できる</h3>
+          <p>診断結果はカード化され、SNSや友人との会話にそのまま使えます。</p>
+        </article>
+        <article class="value-card">
+          <h3>次の行動につながる</h3>
+          <p>旅先検索だけでなく、今日の過ごし方まで具体化します。</p>
+        </article>
       </div>
       <button id="start-btn" class="primary-btn" type="button">診断をはじめる</button>
     </section>
@@ -88,6 +138,16 @@
         <p id="plan-copy"></p>
       </div>
 
+      <div class="result-block result-item" style="--delay: 330ms;">
+        <h3>今日の1日プラン</h3>
+        <div id="mini-itinerary" class="itinerary-list"></div>
+      </div>
+
+      <div class="result-block result-item" style="--delay: 350ms;">
+        <h3>相性のいい旅先候補</h3>
+        <div id="alt-destinations" class="alt-destination-list"></div>
+      </div>
+
       <div class="favorites-row result-item" style="--delay: 360ms;">
         <button id="favorite-btn" class="secondary-btn" type="button">お気に入りに保存</button>
         <p id="favorite-feedback" class="share-feedback" aria-live="polite"></p>
@@ -96,6 +156,21 @@
       <div class="result-block result-item" style="--delay: 420ms;">
         <h3>お気に入りの旅先</h3>
         <div id="favorites-list" class="favorites-list"></div>
+      </div>
+
+      <div class="monetize-panel result-item" style="--delay: 450ms;">
+        <div>
+          <p class="monetize-label">PREMIUM IDEA</p>
+          <h3>もっと深く使うなら TripTune Plus</h3>
+          <p id="premium-copy">
+            相性のいい時間帯、予算別コース、保存結果の比較などをまとめて見られる有料版を想定した導線です。
+          </p>
+        </div>
+        <div class="monetize-actions">
+          <a id="premium-link" class="primary-btn" href="#" target="_blank" rel="noopener noreferrer">プレミアム案を見る</a>
+          <button id="compare-favorites-btn" class="ghost-btn" type="button">お気に入りを比較する</button>
+        </div>
+        <p id="compare-feedback" class="share-feedback" aria-live="polite"></p>
       </div>
 
       <div class="cta-row result-item" style="--delay: 480ms;">

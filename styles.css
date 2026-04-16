@@ -61,6 +61,32 @@ h1 {
   font-size: 0.95rem;
 }
 
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.9fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.hero-side {
+  border-radius: 18px;
+  padding: 18px;
+  background: linear-gradient(135deg, rgba(54, 84, 255, 0.12), rgba(127, 112, 255, 0.12));
+  border: 1px solid rgba(127, 145, 255, 0.24);
+}
+
+.hero-side h2 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+.hero-side p {
+  margin: 0 0 14px;
+  color: var(--text-sub);
+  line-height: 1.65;
+  font-size: 0.92rem;
+}
+
 .panel {
   background: var(--card);
   border-radius: 20px;
@@ -80,6 +106,13 @@ h1 {
 
 .intro-points {
   margin: 16px 0 18px;
+}
+
+.intro-actions,
+.plan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .intro-chip,
@@ -343,6 +376,75 @@ h1 {
   font-size: 0.98rem;
 }
 
+.stats-grid,
+.insight-grid,
+.monetize-grid,
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.stat-card,
+.insight-card,
+.monetize-card,
+.compare-card {
+  border-radius: 14px;
+  border: 1px solid #e0e7ff;
+  background: #fbfcff;
+  padding: 14px;
+}
+
+.stat-label,
+.monetize-label,
+.compare-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+}
+
+.stat-value,
+.compare-value {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.stat-note,
+.compare-note,
+.monetize-card p,
+.insight-card p {
+  margin: 8px 0 0;
+  color: var(--text-sub);
+  line-height: 1.55;
+  font-size: 0.88rem;
+}
+
+.insight-card h4,
+.monetize-card h4 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.daily-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.daily-plan p {
+  margin: 0;
+  color: var(--text-sub);
+  line-height: 1.65;
+}
+
+.helper-copy {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 0.86rem;
+}
+
 .reason-list {
   margin: 0;
   padding-left: 1.05rem;
@@ -432,6 +534,12 @@ h1 {
   cursor: pointer;
 }
 
+.favorite-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .share-row {
   margin-top: 12px;
   display: flex;
@@ -468,7 +576,12 @@ body[data-mode="vivid"] {
 }
 
 body[data-mode="vivid"] .question-card,
-body[data-mode="vivid"] .result-block {
+body[data-mode="vivid"] .result-block,
+body[data-mode="vivid"] .hero-side,
+body[data-mode="vivid"] .stat-card,
+body[data-mode="vivid"] .insight-card,
+body[data-mode="vivid"] .monetize-card,
+body[data-mode="vivid"] .compare-card {
   background: #2a1f49;
   border-color: #4d3a72;
 }
@@ -529,6 +642,14 @@ body[data-mode="vivid"] .favorite-action {
 }
 
 @media (max-width: 640px) {
+  .hero-grid,
+  .stats-grid,
+  .insight-grid,
+  .monetize-grid,
+  .compare-grid {
+    grid-template-columns: 1fr;
+  }
+
   .app-shell {
     width: calc(100% - 20px);
     margin: 16px auto 32px;
