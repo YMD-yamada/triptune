@@ -1,0 +1,26 @@
+# Static site: publish the repository root as-is.
+[build]
+  publish = "."
+  command = ""
+
+# HTML should not be cached aggressively so updates roll out immediately.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Assets can be cached longer (filenames are not hashed in this repo).
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, must-revalidate"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, must-revalidate"
