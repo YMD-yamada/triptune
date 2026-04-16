@@ -26,15 +26,20 @@
       <h2>気分で旅先診断</h2>
       <p>
         単純な分岐ではなく、選んだ答えのニュアンスをスコア化して旅先を提案します。
-        まずは5つの質問で、今のテンションを教えてください。
+        今回は質問数を増やして、気分・過ごし方・旅先のムードまで立体的に見ていきます。
       </p>
+      <div class="intro-points">
+        <span class="intro-chip">7つの質問</span>
+        <span class="intro-chip">結果カード生成</span>
+        <span class="intro-chip">お気に入り保存</span>
+      </div>
       <button id="start-btn" class="primary-btn" type="button">診断をはじめる</button>
     </section>
 
     <section id="quiz-screen" class="panel hidden" aria-live="polite">
       <div class="progress-wrap">
         <div class="progress-meta">
-          <span id="progress-step">Q1 / Q5</span>
+          <span id="progress-step">Q1 / Q7</span>
           <button id="back-btn" class="ghost-btn" type="button">1つ戻る</button>
         </div>
         <div class="progress-bar">
@@ -61,22 +66,44 @@
       <h2 id="destination" class="result-item" style="--delay: 60ms;"></h2>
       <p id="desc" class="result-desc result-item" style="--delay: 120ms;"></p>
 
+      <div class="result-share-card result-item" id="result-card" style="--delay: 150ms;">
+        <p class="card-eyebrow">TRIPTUNE RESULT</p>
+        <h3 id="card-destination"></h3>
+        <p id="card-copy"></p>
+        <div id="card-tags" class="card-tags"></div>
+      </div>
+
       <div class="result-block result-item" style="--delay: 180ms;">
+        <h3>あなたの選択ログ</h3>
+        <div id="picks-list" class="pick-chips"></div>
+      </div>
+
+      <div class="result-block result-item" style="--delay: 240ms;">
         <h3>この提案になった理由</h3>
         <ul id="reasons" class="reason-list"></ul>
       </div>
 
-      <div class="result-block result-item" style="--delay: 240ms;">
+      <div class="result-block result-item" style="--delay: 300ms;">
         <h3>おすすめの楽しみ方</h3>
         <p id="plan-copy"></p>
       </div>
 
-      <div class="cta-row result-item" style="--delay: 300ms;">
+      <div class="favorites-row result-item" style="--delay: 360ms;">
+        <button id="favorite-btn" class="secondary-btn" type="button">お気に入りに保存</button>
+        <p id="favorite-feedback" class="share-feedback" aria-live="polite"></p>
+      </div>
+
+      <div class="result-block result-item" style="--delay: 420ms;">
+        <h3>お気に入りの旅先</h3>
+        <div id="favorites-list" class="favorites-list"></div>
+      </div>
+
+      <div class="cta-row result-item" style="--delay: 480ms;">
         <a id="search-link" class="primary-btn" href="#" target="_blank" rel="noopener noreferrer"></a>
         <button id="retry-btn" class="ghost-btn" type="button">もう一度診断する</button>
       </div>
 
-      <div class="share-wrap result-item" style="--delay: 360ms;">
+      <div class="share-wrap result-item" style="--delay: 540ms;">
         <h3>結果をシェアする</h3>
         <div class="share-row">
           <button id="share-native-btn" class="secondary-btn" type="button">シェアする</button>
@@ -86,7 +113,7 @@
         <p id="share-feedback" class="share-feedback" aria-live="polite"></p>
       </div>
 
-      <div id="invite-area" class="invite hidden result-item" style="--delay: 420ms;">
+      <div id="invite-area" class="invite hidden result-item" style="--delay: 600ms;">
         <p>この結果を「大人モード」に変換して、夜の旅ワードでも見てみますか？</p>
         <button id="invite-btn" class="secondary-btn" type="button">大人モードで見る</button>
       </div>

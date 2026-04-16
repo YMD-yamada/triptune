@@ -69,8 +69,43 @@ h1 {
   padding: clamp(20px, 4vw, 30px);
 }
 
+.intro-points,
+.trail-chips,
+.card-tags,
+.favorites-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.intro-points {
+  margin: 16px 0 18px;
+}
+
+.intro-chip,
+.trail-chip,
+.card-tag,
+.favorite-pill {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #dbe4ff;
+  background: #f4f7ff;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
 .result-animate {
   animation: result-pop 0.42s ease both;
+}
+
+.result-item {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.result-animate .result-item {
+  animation: stagger-rise 0.42s ease forwards;
+  animation-delay: var(--delay, 0ms);
 }
 
 .hidden {
@@ -188,6 +223,16 @@ h1 {
   font-size: 0.9rem;
 }
 
+.trail-wrap {
+  margin-top: 16px;
+}
+
+.trail-label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
 .answers-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -232,15 +277,6 @@ h1 {
   line-height: 1.7;
 }
 
-.pick-strip {
-  margin: 0 0 14px;
-}
-
-.pick-strip h3 {
-  margin: 0 0 10px;
-  font-size: 0.92rem;
-}
-
 .pick-chips {
   display: flex;
   flex-wrap: wrap;
@@ -254,6 +290,44 @@ h1 {
   border: 1px solid #dbe4ff;
   font-size: 12px;
   line-height: 1.1;
+}
+
+.result-share-card {
+  margin-bottom: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(54, 84, 255, 0.92), rgba(127, 112, 255, 0.9));
+  color: #fff;
+  box-shadow: 0 16px 34px rgba(54, 84, 255, 0.26);
+}
+
+.card-eyebrow {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  opacity: 0.86;
+}
+
+.result-share-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.7rem;
+}
+
+.result-share-card p {
+  margin: 0;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.card-tags {
+  margin-top: 14px;
+}
+
+.card-tag {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
 }
 
 .result-block {
@@ -311,6 +385,53 @@ h1 {
   color: #4a4368;
 }
 
+.favorites-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 16px;
+  flex-wrap: wrap;
+}
+
+.favorites-list {
+  min-height: 20px;
+}
+
+.favorite-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #dfe6ff;
+  background: #f8faff;
+}
+
+.favorite-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.favorite-title {
+  font-weight: 700;
+}
+
+.favorite-meta {
+  color: var(--text-sub);
+  font-size: 0.85rem;
+}
+
+.favorite-action {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .share-row {
   margin-top: 12px;
   display: flex;
@@ -323,7 +444,11 @@ h1 {
   flex: 1 1 190px;
 }
 
-.share-status {
+.share-link {
+  text-decoration: none;
+}
+
+.share-feedback {
   margin: 8px 0 0;
   min-height: 1.2em;
   font-size: 0.85rem;
@@ -359,9 +484,26 @@ body[data-mode="vivid"] .invite {
   border-color: #5e4a8a;
 }
 
+body[data-mode="vivid"] .intro-chip,
+body[data-mode="vivid"] .trail-chip,
 body[data-mode="vivid"] .pick-chip {
   background: #2f2254;
   border-color: #5b4587;
+}
+
+body[data-mode="vivid"] .favorite-card {
+  background: #2a1f49;
+  border-color: #4d3a72;
+}
+
+body[data-mode="vivid"] .result-share-card {
+  background:
+    linear-gradient(135deg, rgba(255, 61, 155, 0.94), rgba(95, 62, 160, 0.92));
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32);
+}
+
+body[data-mode="vivid"] .favorite-action {
+  color: #ff8ec7;
 }
 
 @keyframes result-pop {
@@ -372,6 +514,17 @@ body[data-mode="vivid"] .pick-chip {
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes stagger-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -403,7 +556,17 @@ body[data-mode="vivid"] .pick-chip {
     flex-direction: column;
   }
 
+  .favorites-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .share-row {
+    flex-direction: column;
+  }
+
+  .favorite-card {
+    align-items: flex-start;
     flex-direction: column;
   }
 }
