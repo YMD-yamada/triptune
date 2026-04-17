@@ -190,6 +190,11 @@ const altDestinationsEl = document.getElementById("alt-destinations");
 const shareImageBtn = document.getElementById("share-image-btn");
 const compareFavoritesBtn = document.getElementById("compare-favorites-btn");
 const compareFeedback = document.getElementById("compare-feedback");
+const summaryChoiceEl = document.getElementById("summary-choice");
+const summaryReasonEl = document.getElementById("summary-reason");
+const summaryActionEl = document.getElementById("summary-action");
+const detailsToggleBtn = document.getElementById("details-toggle-btn");
+const detailsContent = document.getElementById("details-content");
 let latestShareText = "";
 
 function setFeedback(el, message) {
@@ -291,6 +296,12 @@ function resetQuiz() {
   setFeedback(compareFeedback, "");
   openScreen(introScreen);
   renderSelectionTrail();
+  if (detailsContent) {
+    detailsContent.classList.add("hidden");
+  }
+  if (detailsToggleBtn) {
+    detailsToggleBtn.textContent = "詳細を見る";
+  }
 }
 
 function buildScore() {
@@ -620,7 +631,7 @@ function goBack() {
 
 function resultDescription(placeName, score) {
   const top = getTopSignals(score, 2).map(([key]) => reasonText(key, score[key]).split("（")[0]);
-  return `あなたの旅テンションは「${top.join(" × ")}」タイプ。今回の回答では ${placeName} がいちばん近いイメージです（エンタメ提案）。`;
+  return `あなたの旅テンションは「${top.join(" × ")}」タイプ。今回の回答では ${placeName} がいちばん近いイメージです。`;
 }
 
 function buildSearchLink(destination, score) {
@@ -936,6 +947,21 @@ function showResult() {
   setFeedback(shareFeedback, "");
   setFeedback(favoriteFeedback, "");
   setFeedback(compareFeedback, "");
+  if (summaryChoiceEl) {
+    summaryChoiceEl.textContent = selectedSummary();
+  }
+  if (summaryReasonEl) {
+    summaryReasonEl.textContent = topSignals.slice(0, 2).map(([signal]) => topSignalWord(signal)).join("・");
+  }
+  if (summaryActionEl) {
+    summaryActionEl.textContent = linkData.label;
+  }
+  if (detailsContent) {
+    detailsContent.classList.add("hidden");
+  }
+  if (detailsToggleBtn) {
+    detailsToggleBtn.textContent = "詳細を見る";
+  }
   latestShareText = [
     "TripTune 診断結果",
     `旅先: ${destination.name}`,
@@ -990,6 +1016,15 @@ bindIf(shareImageBtn, "click", downloadShareCardPng);
 bindIf(favoriteBtn, "click", saveCurrentFavorite);
 bindIf(compareFavoritesBtn, "click", compareFavoritesAsText);
 bindIf(premiumForm, "submit", submitPremiumLead);
+bindIf(detailsToggleBtn, "click", () => {
+  if (!detailsContent) {
+    return;
+  }
+  const isHidden = detailsContent.classList.toggle("hidden");
+  if (detailsToggleBtn) {
+    detailsToggleBtn.textContent = isHidden ? "詳細を見る" : "詳細を隠す";
+  }
+});
 bindIf(modeSwitch, "click", () => {
   setMode(mode === "calm" ? "vivid" : "calm");
   if (!resultScreen.classList.contains("hidden") && state.picks.length === questions.length) {

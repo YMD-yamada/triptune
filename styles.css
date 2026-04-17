@@ -291,6 +291,16 @@ h1 {
   display: none;
 }
 
+.section-toggle {
+  margin: 4px 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
 .mode-switch {
   border: 1px solid var(--line);
   background: #fff;
@@ -875,6 +885,10 @@ h1 {
   flex: 1 1 190px;
 }
 
+.disclosure-panel {
+  margin-top: 18px;
+}
+
 .share-link {
   text-decoration: none;
 }
@@ -900,19 +914,20 @@ body[data-mode="vivid"] {
 
 body[data-mode="vivid"] .question-card,
 body[data-mode="vivid"] .result-block,
+body[data-mode="vivid"] .disclosure-panel,
 body[data-mode="vivid"] .hero-side,
 body[data-mode="vivid"] .stat-card,
 body[data-mode="vivid"] .insight-card,
 body[data-mode="vivid"] .monetize-card,
 body[data-mode="vivid"] .compare-card {
-  background: #2a1f49;
-  border-color: #4d3a72;
+  background: #261a43;
+  border-color: #6f56a3;
 }
 
 body[data-mode="vivid"] .answer-btn {
-  background: #2f2254;
-  border-color: #5b4587;
-  color: #fff;
+  background: #2d1f51;
+  border-color: #7b63b3;
+  color: #f7f4ff;
 }
 
 body[data-mode="vivid"] .invite {
@@ -923,13 +938,14 @@ body[data-mode="vivid"] .invite {
 body[data-mode="vivid"] .intro-chip,
 body[data-mode="vivid"] .trail-chip,
 body[data-mode="vivid"] .pick-chip {
-  background: #2f2254;
-  border-color: #5b4587;
+  background: #2f2154;
+  border-color: #785faf;
+  color: #e8defb;
 }
 
 body[data-mode="vivid"] .favorite-card {
-  background: #2a1f49;
-  border-color: #4d3a72;
+  background: #2a1e49;
+  border-color: #755cad;
 }
 
 body[data-mode="vivid"] .result-share-card {
@@ -943,19 +959,47 @@ body[data-mode="vivid"] .favorite-action {
 }
 
 body[data-mode="vivid"] .monetize-panel {
-  background: #2a1f49;
-  border-color: #4d3a72;
+  background: #2a1e49;
+  border-color: #755cad;
 }
 
 body[data-mode="vivid"] .waitlist-panel {
-  background: #2a1f49;
-  border-color: #5e4a8a;
+  background: #2a1e49;
+  border-color: #7c63b5;
 }
 
 body[data-mode="vivid"] .waitlist-input {
-  background: #201739;
-  border-color: #473767;
+  background: #1b1231;
+  border-color: #7a61b3;
   color: var(--text-main);
+}
+
+body[data-mode="vivid"] .hero-copy,
+body[data-mode="vivid"] .question-hint,
+body[data-mode="vivid"] .helper-copy,
+body[data-mode="vivid"] .share-feedback,
+body[data-mode="vivid"] .result-desc,
+body[data-mode="vivid"] .scene-copy,
+body[data-mode="vivid"] .favorite-meta,
+body[data-mode="vivid"] .history-card p,
+body[data-mode="vivid"] .alt-meta,
+body[data-mode="vivid"] .reason-list,
+body[data-mode="vivid"] #plan-copy,
+body[data-mode="vivid"] .checklist,
+body[data-mode="vivid"] .itinerary-list,
+body[data-mode="vivid"] .stat-note,
+body[data-mode="vivid"] .compare-note,
+body[data-mode="vivid"] .monetize-card p,
+body[data-mode="vivid"] .insight-card p,
+body[data-mode="vivid"] .metric span,
+body[data-mode="vivid"] .hero-side p,
+body[data-mode="vivid"] .value-card p,
+body[data-mode="vivid"] .waitlist-note {
+  color: #e3d9f6;
+}
+
+body[data-mode="vivid"] .section-toggle {
+  color: #f7b7da;
 }
 
 @keyframes result-pop {
