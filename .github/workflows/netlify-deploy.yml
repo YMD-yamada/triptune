@@ -29,9 +29,6 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Keep this workflow green when repository-level Netlify secrets are not set.
-    # Netlify UI Git integration can still handle auto-deploys without Actions.
-    if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,7 +38,21 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Check Netlify secrets
+        id: secrets_check
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          if [ -z "${NETLIFY_AUTH_TOKEN:-}" ] || [ -z "${NETLIFY_SITE_ID:-}" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Netlify secrets are missing. Skipping CLI deploy; Netlify Git integration can still auto-publish."
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Deploy (production)
+        if: steps.secrets_check.outputs.enabled == 'true'
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
