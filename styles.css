@@ -210,6 +210,16 @@ h1 {
   display: none;
 }
 
+.section-toggle {
+  margin: 4px 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
 .mode-switch {
   border: 1px solid var(--line);
   background: #fff;
@@ -678,6 +688,10 @@ h1 {
   flex: 1 1 190px;
 }
 
+.disclosure-panel {
+  margin-top: 18px;
+}
+
 .share-link {
   text-decoration: none;
 }
@@ -703,16 +717,17 @@ body[data-mode="vivid"] {
 
 body[data-mode="vivid"] .question-card,
 body[data-mode="vivid"] .result-block,
+body[data-mode="vivid"] .disclosure-panel,
 body[data-mode="vivid"] .hero-side,
 body[data-mode="vivid"] .compare-card {
-  background: #2a1f49;
-  border-color: #4d3a72;
+  background: #261a43;
+  border-color: #6f56a3;
 }
 
 body[data-mode="vivid"] .answer-btn {
-  background: #2f2254;
-  border-color: #5b4587;
-  color: #fff;
+  background: #2d1f51;
+  border-color: #7b63b3;
+  color: #f7f4ff;
 }
 
 body[data-mode="vivid"] .invite {
@@ -723,8 +738,9 @@ body[data-mode="vivid"] .invite {
 body[data-mode="vivid"] .intro-chip,
 body[data-mode="vivid"] .trail-chip,
 body[data-mode="vivid"] .pick-chip {
-  background: #2f2254;
-  border-color: #5b4587;
+  background: #2f2154;
+  border-color: #785faf;
+  color: #e8defb;
 }
 
 body[data-mode="vivid"] .result-share-card {

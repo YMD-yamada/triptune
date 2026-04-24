@@ -227,6 +227,12 @@ function resetQuiz() {
   state.result = null;
   openScreen(introScreen);
   renderSelectionTrail();
+  if (detailsContent) {
+    detailsContent.classList.add("hidden");
+  }
+  if (detailsToggleBtn) {
+    detailsToggleBtn.textContent = "詳細を見る";
+  }
 }
 
 function buildScore() {
@@ -345,7 +351,7 @@ function goBack() {
 
 function resultDescription(placeName, score) {
   const top = getTopSignals(score, 2).map(([key]) => reasonText(key, score[key]).split("（")[0]);
-  return `あなたの旅テンションは「${top.join(" × ")}」タイプ。今回の回答では ${placeName} がいちばん近いイメージです（エンタメ提案）。`;
+  return `あなたの旅テンションは「${top.join(" × ")}」タイプ。今回の回答では ${placeName} がいちばん近いイメージです。`;
 }
 
 function buildSearchLink(destination, score) {

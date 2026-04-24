@@ -36,18 +36,26 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
+
+      - name: Check Netlify secrets
+        id: secrets_check
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          if [ -z "${NETLIFY_AUTH_TOKEN:-}" ] || [ -z "${NETLIFY_SITE_ID:-}" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Netlify secrets are missing. Skipping CLI deploy; Netlify Git integration can still auto-publish."
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Deploy (production)
+        if: steps.secrets_check.outputs.enabled == 'true'
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
           set -euo pipefail
-          if [ -z "${NETLIFY_AUTH_TOKEN:-}" ] || [ -z "${NETLIFY_SITE_ID:-}" ]; then
-            echo "Missing NETLIFY_AUTH_TOKEN or NETLIFY_SITE_ID GitHub Actions secrets."
-            echo "Add them in: Repo → Settings → Secrets and variables → Actions"
-            exit 1
-          fi
-
           npx --yes netlify-cli deploy --prod --dir .
