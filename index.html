@@ -13,103 +13,15 @@
     <header class="hero">
       <p class="eyebrow">TRIP DIAGNOSIS</p>
       <div class="hero-row">
-        <div>
-          <h1>TripTune</h1>
-          <p class="hero-copy">
-            質問に答えるだけで、今の気分に合う「旅」の解釈を提案します。
-            通常モードは観光検索へ、大人モードは夜のキーワード探索へ。
-          </p>
-        </div>
+        <h1>TripTune</h1>
         <button id="mode-switch" class="mode-switch" type="button" aria-live="polite"></button>
       </div>
-
-      <div class="hero-grid">
-        <section class="hero-card hero-card-primary">
-          <p class="hero-card-label">今日のおすすめ体験</p>
-          <h2>診断から、すぐ出かけられる。</h2>
-          <p>
-            気分診断、旅先提案、シェアカード、お気に入り保存までを1つの流れで体験できます。
-          </p>
-          <div class="hero-metrics">
-            <div class="metric">
-              <strong>7</strong>
-              <span>感性質問</span>
-            </div>
-            <div class="metric">
-              <strong>3</strong>
-              <span>旅の理由表示</span>
-            </div>
-            <div class="metric">
-              <strong>1 tap</strong>
-              <span>共有導線</span>
-            </div>
-          </div>
-        </section>
-
-        <aside class="hero-side" aria-label="このアプリについて">
-          <h2>正直に書くこと</h2>
-          <p>
-            診断結果はエンタメ用途の提案です。実在の予約や割引とは無関係で、このページから課金は発生しません。
-            任意の連絡先欄は、将来の更新案内用のUIサンプルです（このデモでは送信しません）。
-          </p>
-        </aside>
-      </div>
+      <p class="hero-copy">質問に答えるだけで、今の気分に合う旅先を1つ提案します。</p>
     </header>
 
     <section id="intro-screen" class="panel">
-      <h2>気分で旅先診断</h2>
-      <p>
-        単純な分岐ではなく、選んだ答えのニュアンスをスコア化して旅先を提案します。
-        今回は質問数を増やして、気分・過ごし方・旅先のムードまで立体的に見ていきます。
-      </p>
-      <div class="intro-points">
-        <span class="intro-chip">7つの質問</span>
-        <span class="intro-chip">結果カード生成</span>
-        <span class="intro-chip">お気に入り保存</span>
-        <span class="intro-chip">モデルプラン提案</span>
-      </div>
-      <div class="value-strip">
-        <article class="value-card">
-          <h3>気分に寄り添う</h3>
-          <p>単なる観光地一覧ではなく、「今の自分」に合う提案を返します。</p>
-        </article>
-        <article class="value-card">
-          <h3>すぐ共有できる</h3>
-          <p>診断結果はカード化され、SNSや友人との会話にそのまま使えます。</p>
-        </article>
-        <article class="value-card">
-          <h3>次の行動につながる</h3>
-          <p>旅先検索だけでなく、今日の過ごし方まで具体化します。</p>
-        </article>
-      </div>
-
-      <div class="waitlist-panel">
-        <h3>更新のお知らせ（任意）</h3>
-        <p class="waitlist-note">
-          メールはこの端末のブラウザ内にだけ保存されます。送信サーバーはなく、こちらからメールは届きません。
-          本番ではフォーム送信先を差し替えてください。
-        </p>
-        <form id="premium-form" class="waitlist-form" novalidate>
-          <label class="sr-only" for="premium-email">メールアドレス</label>
-          <input
-            id="premium-email"
-            class="waitlist-input"
-            type="email"
-            name="email"
-            autocomplete="email"
-            inputmode="email"
-            placeholder="example@domain.com"
-          >
-          <button type="submit" class="secondary-btn waitlist-submit">興味があると伝える</button>
-        </form>
-        <p id="premium-feedback" class="share-feedback" aria-live="polite"></p>
-      </div>
-
-      <div class="intro-block">
-        <h3>最近の診断</h3>
-        <div id="history-list" class="history-list"></div>
-      </div>
-
+      <h2>3ステップで診断</h2>
+      <p>①質問に答える → ②旅先が出る → ③そのまま検索する</p>
       <button id="start-btn" class="primary-btn" type="button">診断をはじめる</button>
     </section>
 
@@ -140,125 +52,20 @@
 
     <section id="result-screen" class="panel hidden" aria-live="polite">
       <p class="result-kicker result-item" style="--delay: 0ms;">あなたに合う旅先</p>
-      <p id="destination-badge" class="destination-badge result-item" style="--delay: 40ms;" hidden></p>
       <h2 id="destination" class="result-item" style="--delay: 60ms;"></h2>
       <p id="desc" class="result-desc result-item" style="--delay: 120ms;"></p>
 
-      <div class="result-share-card result-item" id="result-card" style="--delay: 150ms;">
-        <div class="share-card-grid">
-          <div class="share-card-copy">
-            <p class="card-eyebrow">TRIPTUNE RESULT</p>
-            <h3 id="card-destination"></h3>
-            <p id="card-copy"></p>
-            <div id="card-tags" class="card-tags"></div>
-          </div>
-          <div class="share-card-visual" aria-hidden="true">
-            <span id="hero-visual-text" class="share-card-visual-text"></span>
-          </div>
-        </div>
-      </div>
-
       <div class="result-block result-item" style="--delay: 180ms;">
-        <h3>いまの回答のムード</h3>
-        <p id="trip-scene" class="scene-copy"></p>
-        <div class="signal-meter-wrap">
-          <div class="signal-meter" role="img" aria-labelledby="confidence-label">
-            <span id="confidence-meter" class="signal-meter-fill"></span>
-          </div>
-          <p id="confidence-label" class="signal-meter-label"></p>
-        </div>
-      </div>
-
-      <div class="result-block result-item" style="--delay: 200ms;">
-        <h3>あなたの選択ログ</h3>
-        <div id="picks-list" class="pick-chips"></div>
-      </div>
-
-      <div class="result-block result-item" style="--delay: 240ms;">
         <h3>この提案になった理由</h3>
         <ul id="reasons" class="reason-list"></ul>
       </div>
 
-      <div class="result-block result-item" style="--delay: 300ms;">
-        <h3>おすすめの楽しみ方</h3>
-        <p id="plan-copy"></p>
-      </div>
-
-      <button id="details-toggle" class="ghost-btn result-item" style="--delay: 315ms;" type="button">
-        詳細を表示する
-      </button>
-
-      <div class="result-block result-item secondary-info" style="--delay: 320ms;">
-        <h3>出発前チェック（3つ）</h3>
-        <ul id="plan-checklist" class="checklist"></ul>
-      </div>
-
-      <div class="result-block result-item secondary-info" style="--delay: 330ms;">
-        <h3>今日の1日プラン</h3>
-        <p class="helper-copy">あくまでイメージ用のたたき台です。現地の営業時間や予約は各自でご確認ください。</p>
-        <ol id="mini-itinerary" class="itinerary-list"></ol>
-      </div>
-
-      <div class="result-block result-item secondary-info" style="--delay: 350ms;">
-        <h3>ほかの候補（スコア順）</h3>
-        <p class="helper-copy">メイン提案に次いで近かった候補です。行き先は必ず自分の条件で最終判断してください。</p>
-        <div id="alt-destinations" class="alt-destination-list"></div>
-      </div>
-
-      <div class="result-block result-item secondary-info" style="--delay: 370ms;">
-        <h3>候補の並びを比較</h3>
-        <div id="compare-list" class="compare-grid"></div>
-      </div>
-
-      <div class="favorites-row result-item" style="--delay: 360ms;">
-        <button id="favorite-btn" class="secondary-btn" type="button">お気に入りに保存</button>
-        <button id="compare-favorites-btn" class="ghost-btn" type="button">お気に入りを文章で比較</button>
-        <p id="favorite-feedback" class="share-feedback" aria-live="polite"></p>
-      </div>
-      <p id="compare-feedback" class="share-feedback" aria-live="polite"></p>
-
-      <div class="result-block result-item secondary-info" style="--delay: 420ms;">
-        <h3>お気に入りの旅先</h3>
-        <div id="favorites-list" class="favorites-list"></div>
-      </div>
-
-      <div class="monetize-panel result-item secondary-info" style="--delay: 450ms;">
-        <div>
-          <p class="monetize-label">将来の拡張（案）</p>
-          <h3>より細かいプランや比較をまとめたい場合</h3>
-          <p id="premium-copy">
-            ここに載せる内容は「今は無料で使える範囲」と「将来の有料や外部予約への接続」を分けて書くのが信頼につながります。
-            誇大な割引や偽の締切は使わず、できることだけを明示してください。
-          </p>
-        </div>
-        <div class="monetize-actions">
-          <a
-            id="premium-link"
-            class="ghost-btn"
-            href="https://github.com/YMD-yamada/triptune"
-            target="_blank"
-            rel="noopener noreferrer"
-          >リポジトリを見る（開発者向け）</a>
-        </div>
-      </div>
-
-      <div class="cta-row result-item" style="--delay: 480ms;">
+      <div class="cta-row result-item" style="--delay: 240ms;">
         <a id="search-link" class="primary-btn" href="#" target="_blank" rel="noopener noreferrer"></a>
         <button id="retry-btn" class="ghost-btn" type="button">もう一度診断する</button>
       </div>
 
-      <div class="share-wrap result-item" style="--delay: 540ms;">
-        <h3>結果をシェアする</h3>
-        <div class="share-row">
-          <button id="share-native-btn" class="secondary-btn" type="button">シェアする</button>
-          <button id="share-copy-btn" class="ghost-btn" type="button">結果テキストをコピー</button>
-          <button id="share-image-btn" class="ghost-btn" type="button">カードを画像で保存</button>
-          <a id="share-x-link" class="ghost-btn share-link" href="#" target="_blank" rel="noopener noreferrer">Xでシェア</a>
-        </div>
-        <p id="share-feedback" class="share-feedback" aria-live="polite"></p>
-      </div>
-
-      <div id="invite-area" class="invite hidden result-item" style="--delay: 600ms;">
+      <div id="invite-area" class="invite hidden result-item" style="--delay: 300ms;">
         <p>この結果を「大人モード」に変換して、夜の旅ワードでも見てみますか？</p>
         <button id="invite-btn" class="secondary-btn" type="button">大人モードで見る</button>
       </div>
