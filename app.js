@@ -2,8 +2,6 @@
 const params = new URLSearchParams(location.search);
 let mode = params.get("mode") === "vivid" ? "vivid" : "calm";
 
-const storageKey = "triptune-favorites";
-
 const questions = [
   {
     id: "mood",
@@ -157,18 +155,9 @@ const backBtn = document.getElementById("back-btn");
 const destinationEl = document.getElementById("destination");
 const descEl = document.getElementById("desc");
 const reasonsEl = document.getElementById("reasons");
-const planCopyEl = document.getElementById("plan-copy");
 const inviteArea = document.getElementById("invite-area");
 const searchLink = document.getElementById("search-link");
 const modeSwitch = document.getElementById("mode-switch");
-
-function loadFavorites() {
-  try {
-    return JSON.parse(localStorage.getItem(storageKey) || "[]");
-  } catch (error) {
-    return [];
-  }
-}
 
 function topSignalWord(signal) {
   const signalWordMap = {
@@ -185,10 +174,6 @@ function topSignalWord(signal) {
   };
 
   return signalWordMap[signal] || "旅";
-}
-
-function modeLabel() {
-  return mode === "vivid" ? "大人モード" : "通常モード";
 }
 
 function setMode(nextMode, updateUrl = true) {
@@ -227,12 +212,6 @@ function resetQuiz() {
   state.result = null;
   openScreen(introScreen);
   renderSelectionTrail();
-  if (detailsContent) {
-    detailsContent.classList.add("hidden");
-  }
-  if (detailsToggleBtn) {
-    detailsToggleBtn.textContent = "詳細を見る";
-  }
 }
 
 function buildScore() {
@@ -381,7 +360,6 @@ function showResult() {
 
   destinationEl.textContent = destination.name;
   descEl.textContent = description;
-  planCopyEl.textContent = destination.calmPlan;
   searchLink.href = linkData.href;
   searchLink.textContent = linkData.label;
   state.result = { destination, score, topSignals, description };
@@ -401,8 +379,6 @@ function showResult() {
 
   progressFill.style.width = "100%";
   openScreen(resultScreen);
-  renderFavorites();
-  saveHistoryEntry(destination, topSignals);
   resultScreen.classList.remove("result-animate");
   void resultScreen.offsetWidth;
   resultScreen.classList.add("result-animate");
