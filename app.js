@@ -157,6 +157,9 @@ const descEl = document.getElementById("desc");
 const reasonsEl = document.getElementById("reasons");
 const inviteArea = document.getElementById("invite-area");
 const searchLink = document.getElementById("search-link");
+const searchLinkAlt = document.getElementById("search-link-alt");
+const vividAltRow = document.getElementById("vivid-alt-row");
+const vividSearchHint = document.getElementById("vivid-search-hint");
 const modeSwitch = document.getElementById("mode-switch");
 
 function topSignalWord(signal) {
@@ -333,13 +336,53 @@ function resultDescription(placeName, score) {
   return `あなたの旅テンションは「${top.join(" × ")}」タイプ。今回の回答では ${placeName} がいちばん近いイメージです。`;
 }
 
+function dmmVideoaSearchUrl(query) {
+  return `https://www.dmm.co.jp/digital/videoa/-/list/search/=/?searchstr=${encodeURIComponent(query)}`;
+}
+
+/**
+ * 長いフレーズやスペース区切りの複合語は在庫と一致しにくい。
+ * 短い日本語2語程度＋第2候補で当たりやすさを上げる。
+ */
+function buildVividSearchQueries(destination, topSignal) {
+  const byDestination = {
+    北海道: { a: "人妻 中出", b: "夫婦 温泉" },
+    東京: { a: "巨乳 痴女", b: "人妻 中出" },
+    沖縄: { a: "水着 巨乳", b: "南国" },
+    長野: { a: "人妻 不倫", b: "温泉" },
+    神戸: { a: "人妻 若妻", b: "不倫" }
+  };
+
+  const bySignal = {
+    relax: "人妻 温泉",
+    thrill: "痴女 中出",
+    romance: "若妻 不倫",
+    nature: "人妻 温泉",
+    city: "OL 中出",
+    sea: "水着 巨乳",
+    mountain: "温泉 不倫",
+    culture: "人妻 熟女",
+    night: "痴女 人妻",
+    solo: "素人 中出"
+  };
+
+  const fallback = { a: "人妻", b: "中出" };
+  const d = byDestination[destination.name] || fallback;
+  const s = bySignal[topSignal] || d.a;
+
+  const a = s.length <= 12 ? s : d.a;
+  return { primary: a, alt: a === d.a ? d.b : d.a };
+}
+
 function buildSearchLink(destination, score) {
   const topSignal = getTopSignals(score, 1)[0]?.[0] || "culture";
   if (mode === "vivid") {
-    const keyword = `${destination.vividTag} ${topSignalWord(topSignal) || "異文化"}`;
+    const { primary, alt } = buildVividSearchQueries(destination, topSignal);
     return {
-      href: `https://www.dmm.co.jp/digital/videoa/-/list/search/=/?searchstr=${encodeURIComponent(keyword)}`,
-      label: "大人向けキーワードを探す"
+      href: dmmVideoaSearchUrl(primary),
+      label: "DMMで探す（候補A）",
+      hrefAlt: dmmVideoaSearchUrl(alt),
+      labelAlt: "候補Bで探す"
     };
   }
 
@@ -362,6 +405,24 @@ function showResult() {
   descEl.textContent = description;
   searchLink.href = linkData.href;
   searchLink.textContent = linkData.label;
+
+  if (mode === "vivid" && linkData.hrefAlt) {
+    searchLinkAlt.href = linkData.hrefAlt;
+    searchLinkAlt.textContent = linkData.labelAlt;
+    if (vividAltRow) {
+      vividAltRow.classList.remove("hidden");
+    }
+    if (vividSearchHint) {
+      vividSearchHint.classList.remove("hidden");
+    }
+  } else {
+    if (vividAltRow) {
+      vividAltRow.classList.add("hidden");
+    }
+    if (vividSearchHint) {
+      vividSearchHint.classList.add("hidden");
+    }
+  }
   state.result = { destination, score, topSignals, description };
 
   reasonsEl.innerHTML = "";

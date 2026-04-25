@@ -1,6 +1,14 @@
 # triptune
 気分で旅先を診断するアプリ
 
+## 公開URLについて（GitHub のユーザー名を出したくない場合）
+
+リポジトリの **GitHub Pages**（`https://<user>.github.io/...`）を有効にしていると、URL にアカウント名が入ります。  
+**GitHub のURLを表に出したくないなら、GitHub Pages をオフ**にし、**Netlify の本番URL（または独自ドメイン）だけ**を使うのが分かりやすいです。
+
+- GitHub Pages の設定: リポジトリ **Settings → Pages** で **None** にする（または delete）
+- 本番URLの確認: [Netlify ダッシュボード](https://app.netlify.com/) → 対象サイト → **Site overview** の **Production domain**
+
 ## Netlify で公開する
 
 このリポジトリはビルド不要の静的サイトです。

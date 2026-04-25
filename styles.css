@@ -654,6 +654,23 @@ h1 {
   flex-wrap: wrap;
 }
 
+.vivid-hint {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-sub);
+  text-align: left;
+}
+
+.cta-row-alt {
+  margin-top: 8px;
+}
+
+.cta-row-alt .secondary-btn {
+  width: 100%;
+  text-align: center;
+}
+
 .cta-row .primary-btn {
   flex: 1 1 210px;
 }
@@ -741,6 +758,10 @@ body[data-mode="vivid"] .pick-chip {
   background: #2f2154;
   border-color: #785faf;
   color: #e8defb;
+}
+
+body[data-mode="vivid"] .vivid-hint {
+  color: #e3d9f6;
 }
 
 body[data-mode="vivid"] .result-share-card {
