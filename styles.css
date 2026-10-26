@@ -837,3 +837,14 @@ body[data-mode="vivid"] .result-share-card {
     flex-direction: column;
   }
 }
+
+.support-foot {
+  text-align: center;
+  padding: 24px 16px 32px;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.support-foot a {
+  color: inherit;
+}
