@@ -1,312 +1,370 @@
-
-const params = new URLSearchParams(location.search);
-let mode = params.get("mode") === "vivid" ? "vivid" : "calm";
-
+// 出発地は東京駅の想定。時間は電車・車のおおよその目安。
 const questions = [
   {
-    id: "mood",
-    text: "いま欲しい空気感は？",
-    hint: "気分に近いものをひとつ選んでください。",
+    id: "stay",
+    text: "何日くらい行けそう？",
+    hint: "日数で候補をしぼります。",
     choices: [
-      { label: "ゆったり", note: "深呼吸できる時間が欲しい", score: { relax: 3, culture: 1 } },
-      { label: "刺激的", note: "テンション高めでいきたい", score: { thrill: 3, night: 2 } },
-      { label: "ロマンチック", note: "物語っぽい空気が好き", score: { romance: 3, sea: 1 } },
-      { label: "カオス", note: "予想外の展開に惹かれる", score: { thrill: 2, city: 2, night: 2 } }
-    ]
-  },
-  {
-    id: "view",
-    text: "惹かれる景色は？",
-    hint: "旅先の背景をイメージして選んでください。",
-    choices: [
-      { label: "森林・大地", note: "自然に包まれたい", score: { nature: 3, relax: 2 } },
-      { label: "ネオン街", note: "光と音の密度を浴びたい", score: { city: 3, night: 2 } },
-      { label: "海辺", note: "波音と開放感が好き", score: { sea: 3, romance: 2 } },
-      { label: "高原・山", note: "空気の透明度を重視", score: { mountain: 3, nature: 2 } }
-    ]
-  },
-  {
-    id: "company",
-    text: "だれと旅する？",
-    hint: "同行者で旅の解釈が変わります。",
-    choices: [
-      { label: "ひとり", note: "自分のペース重視", score: { solo: 3, culture: 1 } },
-      { label: "友達", note: "体験共有で盛り上がりたい", score: { thrill: 2, city: 1 } },
-      { label: "恋人", note: "雰囲気を大切にしたい", score: { romance: 3, sea: 1 } },
-      { label: "家族", note: "安心して楽しみたい", score: { relax: 2, culture: 2 } }
-    ]
-  },
-  {
-    id: "season",
-    text: "いま想像している季節は？",
-    hint: "体感温度を決めるイメージで。",
-    choices: [
-      { label: "春", note: "軽やかに出かけたい", score: { culture: 2, relax: 1 } },
-      { label: "夏", note: "熱量のある時間がいい", score: { sea: 2, thrill: 2 } },
-      { label: "秋", note: "余韻のある景色が好き", score: { romance: 2, culture: 2 } },
-      { label: "冬", note: "濃い体験に寄せたい", score: { night: 2, city: 1, mountain: 1 } }
-    ]
-  },
-  {
-    id: "purpose",
-    text: "今回の旅で満たしたいものは？",
-    hint: "最後に、旅の目的を選んでください。",
-    choices: [
-      { label: "癒し", note: "リセットしたい", score: { relax: 3, nature: 1 } },
-      { label: "冒険", note: "未知の体験を取りにいく", score: { thrill: 3, mountain: 1 } },
-      { label: "文化体験", note: "学びや発見を楽しみたい", score: { culture: 3, city: 1 } },
-      { label: "高揚感", note: "ドキドキを優先したい", score: { night: 3, romance: 1 } }
-    ]
-  },
-  {
-    id: "pace",
-    text: "旅のテンポはどれが理想？",
-    hint: "詰め込み派か、余白派かを選んでください。",
-    choices: [
-      { label: "のんびり", note: "一日に1〜2個の予定で十分", score: { relax: 3, solo: 1 } },
-      { label: "バランス型", note: "歩く時間も休む時間も欲しい", score: { culture: 2, romance: 1 } },
-      { label: "アクティブ", note: "朝から夜まで動きたい", score: { thrill: 3, city: 1 } },
-      { label: "夜型", note: "日没後から本番", score: { night: 3, city: 1 } }
+      { label: "日帰り", note: "朝出て夜には帰る", stay: "day", score: {} },
+      { label: "1泊2日", note: "週末にゆっくり", stay: "1night", score: { onsen: 1 } },
+      { label: "2泊以上", note: "遠くまで行ける", stay: "2night", score: {} }
     ]
   },
   {
     id: "budget",
-    text: "今日はどんな贅沢をしたい？",
-    hint: "お金の使い方にも旅の個性が出ます。",
+    text: "予算は1人いくらくらい？",
+    hint: "交通費と宿代をふくめた目安です。",
     choices: [
-      { label: "ご当地コスパ", note: "賢く楽しく遊びたい", score: { culture: 2, solo: 1 } },
-      { label: "食に全振り", note: "グルメで満足度を上げたい", score: { culture: 2, relax: 1 } },
-      { label: "体験に投資", note: "アクティビティ重視", score: { thrill: 2, mountain: 1, sea: 1 } },
-      { label: "雰囲気重視", note: "景色やホテルに浸りたい", score: { romance: 2, night: 1 } }
+      { label: "1万円まで", note: "気軽に行きたい", budget: 1, score: {} },
+      { label: "3万円まで", note: "少しだけぜいたく", budget: 2, score: {} },
+      { label: "3万円より上", note: "せっかくなら奮発", budget: 3, score: {} }
+    ]
+  },
+  {
+    id: "company",
+    text: "だれと行く？",
+    hint: "同行者に合う過ごし方を優先します。",
+    choices: [
+      { label: "ひとり", note: "自分のペースで", score: { solo: 3, culture: 1 } },
+      { label: "友達", note: "わいわい楽しみたい", score: { thrill: 2, food: 2 } },
+      { label: "恋人・夫婦", note: "雰囲気を大事にしたい", score: { romance: 3, relax: 1 } },
+      { label: "家族・子ども", note: "安心して楽しみたい", score: { family: 3, nature: 1 } }
+    ]
+  },
+  {
+    id: "mood",
+    text: "いまの気分は？",
+    hint: "いちばん近いものを選んでください。",
+    choices: [
+      { label: "ゆっくり休みたい", note: "何もしない時間がほしい", score: { relax: 3, onsen: 2 } },
+      { label: "わくわくしたい", note: "体を動かして遊びたい", score: { thrill: 3, family: 1 } },
+      { label: "非日常にひたりたい", note: "景色や空気を変えたい", score: { romance: 2, nature: 2 } },
+      { label: "いろいろ見たい", note: "あちこち歩いて回りたい", score: { culture: 2, city: 2, food: 1 } }
+    ]
+  },
+  {
+    id: "view",
+    text: "見たい景色は？",
+    hint: "旅先の写真を思い浮かべて。",
+    choices: [
+      { label: "海", note: "波の音と広い空", score: { sea: 3 } },
+      { label: "山・森・湖", note: "緑と澄んだ空気", score: { mountain: 2, nature: 2 } },
+      { label: "街・夜景", note: "にぎやかな通りと光", score: { city: 3, night: 2 } },
+      { label: "古い町並み", note: "寺社やレトロな通り", score: { culture: 3 } }
+    ]
+  },
+  {
+    id: "fun",
+    text: "いちばんの楽しみは？",
+    hint: "最後の質問です。",
+    choices: [
+      { label: "温泉", note: "お湯につかってのんびり", score: { onsen: 3, relax: 2 } },
+      { label: "食べ歩き", note: "ご当地グルメが主役", score: { food: 3, city: 1 } },
+      { label: "体験・アクティビティ", note: "遊んで思い出を作る", score: { thrill: 3, nature: 1 } },
+      { label: "写真・景色", note: "きれいな景色を残したい", score: { romance: 2, nature: 1, sea: 1 } }
     ]
   }
 ];
 
 const destinations = [
   {
-    name: "北海道",
-    profile: { nature: 3, relax: 2, mountain: 2, culture: 1 },
-    calmPlan: "広い自然の中で温泉やローカルグルメをゆっくり巡る旅。",
-    vividTag: "雪夜 ロマンス",
-    badge: "王道リトリート",
-    scene: "温泉と雪景色で気持ちをほぐしたい日に向きやすいムードです。",
-    actions: ["朝風呂のある宿を探す", "ローカルグルメを3つ候補に入れる", "移動時間も景色として楽しむ"],
-    image: "ALPINE AIR"
+    name: "鎌倉・江ノ島", area: "神奈川", access: "東京から電車で約1時間", stays: ["day", "1night"], budget: 1,
+    profile: { culture: 3, sea: 2, romance: 2, food: 2, solo: 1 },
+    plan: "朝は鎌倉の寺社と小町通り、午後は江ノ電で海へ。夕日を見て帰る王道コース。",
+    actions: ["江ノ電の1日乗車券を使う", "小町通りで食べ歩き", "江ノ島で夕日を見る"]
   },
   {
-    name: "東京",
-    profile: { city: 3, thrill: 2, culture: 2, night: 2 },
-    calmPlan: "昼はアートや街歩き、夜はネオン散策で刺激を回収する旅。",
-    vividTag: "都会 密室スリル",
-    badge: "高密度シティ",
-    scene: "感度の高いスポットをはしごしたい日に強い選択肢。",
-    actions: ["エリアを2つに絞って回遊する", "昼は展示、夜は夜景の導線を組む", "予約が必要な店を1つ入れる"],
-    image: "CITY LIGHT"
+    name: "箱根", area: "神奈川", access: "東京から電車で約1時間半", stays: ["day", "1night"], budget: 2,
+    profile: { onsen: 3, relax: 3, mountain: 2, romance: 2, nature: 1 },
+    plan: "登山電車とロープウェイで山を上がり、芦ノ湖をめぐって温泉で締める。",
+    actions: ["周遊パスで乗り物をまとめる", "芦ノ湖の遊覧船に乗る", "日帰り温泉か宿でゆっくり"]
   },
   {
-    name: "沖縄",
-    profile: { sea: 3, relax: 2, romance: 2, thrill: 1 },
-    calmPlan: "海辺で解放感を感じながら、島時間で心拍を整える旅。",
-    vividTag: "南国 甘美バカンス",
-    badge: "開放感リゾート",
-    scene: "考え込みすぎず、体をゆるめる休日を作りたい時に寄せやすいムードです。",
-    actions: ["サンセットが見える場所を押さえる", "移動は少なめにして海辺時間を確保する", "島グルメを主役にする"],
-    image: "SEA ESCAPE"
+    name: "横浜（みなとみらい・中華街）", area: "神奈川", access: "東京から電車で約30分", stays: ["day"], budget: 1,
+    profile: { city: 3, night: 3, food: 2, romance: 2, family: 1 },
+    plan: "中華街で食べ歩き、山下公園を歩いて、夜はみなとみらいの夜景。",
+    actions: ["中華街は昼前に着く", "赤レンガ倉庫を散歩", "夜景は大さん橋から"]
   },
   {
-    name: "長野",
-    profile: { mountain: 3, nature: 2, relax: 1, culture: 2 },
-    calmPlan: "高原と温泉、地元文化を組み合わせて静かな達成感を得る旅。",
-    vividTag: "秘湯 禁断トリップ",
-    badge: "深呼吸マウンテン",
-    scene: "空気の軽さや景色の抜け感で頭を切り替えたい人向け。",
-    actions: ["朝の散歩ルートを先に決める", "温泉とカフェをセットで組む", "景色が良い時間帯に合わせて移動する"],
-    image: "MOUNTAIN CALM"
+    name: "熱海", area: "静岡", access: "東京から新幹線で約45分", stays: ["day", "1night"], budget: 2,
+    profile: { onsen: 3, sea: 2, relax: 2, food: 2, night: 1 },
+    plan: "駅前の商店街で食べ歩き、海辺を散歩して、温泉でのんびり。",
+    actions: ["駅前の商店街で食べ歩き", "海沿いのサンビーチを散歩", "日帰り温泉に入る"]
   },
   {
-    name: "神戸",
-    profile: { romance: 3, city: 2, culture: 2, night: 1 },
-    calmPlan: "港町の夜景と洋館エリアを巡り、少し背伸びした旅時間を楽しむ。",
-    vividTag: "港町 艶めきデート",
-    badge: "ムード先行型",
-    scene: "景色・食・会話の3つを心地よく成立させたい日に向いています。",
-    actions: ["夕暮れに港側へ寄る", "雰囲気の良いカフェを1軒予約する", "写真が映える通りを散歩する"],
-    image: "HARBOR MOOD"
+    name: "伊豆高原・伊東", area: "静岡", access: "東京から電車で約2時間", stays: ["1night", "2night"], budget: 2,
+    profile: { sea: 2, nature: 2, relax: 2, onsen: 2, family: 2, thrill: 1 },
+    plan: "海の見える遊歩道や大室山、小さな美術館をめぐって温泉宿へ。",
+    actions: ["城ヶ崎海岸のつり橋を渡る", "大室山のリフトに乗る", "温泉つきの宿を選ぶ"]
+  },
+  {
+    name: "下田", area: "静岡", access: "東京から電車で約2時間半〜3時間", stays: ["1night", "2night"], budget: 2,
+    profile: { sea: 3, romance: 2, relax: 2, nature: 1 },
+    plan: "白い砂浜と青い海。何もしない時間を楽しむ南伊豆の海旅。",
+    actions: ["白浜海岸で海をながめる", "ペリーロードを散歩", "海鮮の店を1軒決めておく"]
+  },
+  {
+    name: "河口湖・富士五湖", area: "山梨", access: "東京から電車・バスで約2時間", stays: ["day", "1night"], budget: 2,
+    profile: { nature: 3, mountain: 2, romance: 2, family: 1, thrill: 1 },
+    plan: "湖ごしの富士山を見ながらサイクリングやロープウェイ。晴れた日がおすすめ。",
+    actions: ["天気予報で富士山が見える日を選ぶ", "湖畔をレンタサイクルで回る", "ロープウェイで展望台へ"]
+  },
+  {
+    name: "勝沼・甲府（ぶどうとワイン）", area: "山梨", access: "東京から電車で約1時間半", stays: ["day", "1night"], budget: 2,
+    profile: { food: 3, relax: 2, romance: 2, culture: 1 },
+    plan: "ワイナリーやぶどう畑をめぐって、ほうとうを食べる大人の日帰り。",
+    actions: ["ワイナリーを2軒に絞る", "旬の果物狩りを調べる", "名物のほうとうを食べる"]
+  },
+  {
+    name: "清里・八ヶ岳", area: "山梨", access: "東京から電車で約2時間半", stays: ["1night", "2night"], budget: 2,
+    profile: { mountain: 3, nature: 3, relax: 2, family: 1 },
+    plan: "高原の牧場とソフトクリーム、星空。空気のおいしさを味わう1泊旅。",
+    actions: ["牧場でソフトクリーム", "高原の散歩道を歩く", "夜は星空を見上げる"]
+  },
+  {
+    name: "軽井沢", area: "長野", access: "東京から新幹線で約1時間", stays: ["day", "1night"], budget: 2,
+    profile: { nature: 2, relax: 2, romance: 3, food: 1, culture: 1 },
+    plan: "林の中のカフェと旧軽井沢の通り、アウトレット。避暑地らしい上品な休日。",
+    actions: ["旧軽井沢銀座を散歩", "森の中のカフェで休む", "雲場池を一周する"]
+  },
+  {
+    name: "草津温泉", area: "群馬", access: "東京からバスで約4時間", stays: ["1night", "2night"], budget: 2,
+    profile: { onsen: 3, relax: 3, culture: 1, night: 1 },
+    plan: "湯畑のまわりを浴衣で歩き、いくつもの湯をめぐる温泉らしい温泉旅。",
+    actions: ["湯畑の近くに宿をとる", "共同浴場や日帰り湯をめぐる", "夜の湯畑ライトアップを見る"]
+  },
+  {
+    name: "伊香保温泉", area: "群馬", access: "東京から電車・バスで約2時間半", stays: ["1night"], budget: 2,
+    profile: { onsen: 3, culture: 2, relax: 2, romance: 1 },
+    plan: "石段街をのぼりながら射的や温泉まんじゅう。レトロな温泉街で1泊。",
+    actions: ["石段街を上まで歩く", "温泉まんじゅうを食べ比べ", "石段の近くの宿に泊まる"]
+  },
+  {
+    name: "日光", area: "栃木", access: "東京から電車で約2時間", stays: ["day", "1night"], budget: 2,
+    profile: { culture: 3, nature: 2, mountain: 2, family: 1 },
+    plan: "東照宮をじっくり見て、いろは坂の先の中禅寺湖や華厳の滝へ。",
+    actions: ["東照宮は朝いちばんに", "華厳の滝を見に行く", "名物の湯波（ゆば）を食べる"]
+  },
+  {
+    name: "那須高原", area: "栃木", access: "東京から新幹線とバスで約2時間", stays: ["1night", "2night"], budget: 2,
+    profile: { family: 3, nature: 2, thrill: 2, relax: 1, onsen: 1 },
+    plan: "牧場や動物とふれあえる施設、遊園地がまとまった高原。家族旅行の定番。",
+    actions: ["動物とふれあえる施設を1つ選ぶ", "牧場のソフトクリーム", "車があると回りやすい"]
+  },
+  {
+    name: "鬼怒川温泉", area: "栃木", access: "東京から特急で約2時間", stays: ["1night"], budget: 2,
+    profile: { onsen: 3, family: 2, thrill: 1, relax: 2 },
+    plan: "渓谷沿いの温泉宿に泊まり、ライン下りやテーマパークで遊ぶ。",
+    actions: ["渓谷の見える宿を選ぶ", "ライン下りに乗る", "近くのテーマパークも候補に"]
+  },
+  {
+    name: "宇都宮", area: "栃木", access: "東京から新幹線で約50分", stays: ["day"], budget: 1,
+    profile: { food: 3, city: 1, solo: 2, culture: 1 },
+    plan: "餃子の店をはしごして、大谷石の地下空間を見に行くグルメ日帰り。",
+    actions: ["餃子の店を2〜3軒はしご", "大谷資料館の地下空間へ", "帰りにおみやげの冷凍餃子"]
+  },
+  {
+    name: "川越", area: "埼玉", access: "東京から電車で約40分〜1時間", stays: ["day"], budget: 1,
+    profile: { culture: 3, food: 2, romance: 1, solo: 1 },
+    plan: "蔵造りの町並みと菓子屋横丁。小江戸を着物で歩くのも楽しい。",
+    actions: ["時の鐘を見に行く", "菓子屋横丁で駄菓子", "さつまいものスイーツを食べる"]
+  },
+  {
+    name: "秩父・長瀞", area: "埼玉", access: "東京から特急で約1時間半", stays: ["day", "1night"], budget: 1,
+    profile: { nature: 3, thrill: 2, culture: 1, family: 1, food: 1 },
+    plan: "長瀞のライン下りで川をくだり、秩父神社と名物グルメをめぐる。",
+    actions: ["長瀞のライン下りに乗る", "岩畳を歩く", "わらじかつ丼を食べる"]
+  },
+  {
+    name: "高尾山", area: "東京", access: "新宿から電車で約1時間", stays: ["day"], budget: 1,
+    profile: { mountain: 3, nature: 2, solo: 2, family: 1, food: 1 },
+    plan: "ケーブルカーも使える初心者向けの山。山頂の景色と下山後のとろろそば。",
+    actions: ["歩きやすい靴で行く", "行きはケーブルカーも可", "下山後に温泉とそば"]
+  },
+  {
+    name: "奥多摩", area: "東京", access: "新宿から電車で約2時間", stays: ["day", "1night"], budget: 1,
+    profile: { nature: 3, mountain: 2, thrill: 2, solo: 2 },
+    plan: "渓谷沿いの遊歩道や鍾乳洞。都内とは思えない深い緑を歩く。",
+    actions: ["渓谷の遊歩道を歩く", "鍾乳洞に入る", "日の入り前に帰りの電車を確認"]
+  },
+  {
+    name: "浅草・谷根千", area: "東京", access: "都内", stays: ["day"], budget: 1,
+    profile: { culture: 3, food: 2, solo: 2, city: 1 },
+    plan: "浅草寺と仲見世、そこから谷中・根津・千駄木の下町を食べ歩き。",
+    actions: ["浅草寺は朝が空いている", "谷中銀座で食べ歩き", "夕方は隅田川沿いを散歩"]
+  },
+  {
+    name: "お台場・豊洲", area: "東京", access: "都内", stays: ["day"], budget: 1,
+    profile: { city: 2, night: 3, sea: 1, romance: 2, family: 2 },
+    plan: "海沿いを歩いて体験型の施設で遊び、夜はレインボーブリッジの夜景。",
+    actions: ["体験型の施設を1つ予約", "海沿いの遊歩道を歩く", "夜景は日没後30分ごろ"]
+  },
+  {
+    name: "三浦半島・城ヶ島", area: "神奈川", access: "東京から電車で約1時間半", stays: ["day"], budget: 1,
+    profile: { sea: 3, food: 2, nature: 1, solo: 1 },
+    plan: "海沿いの岩場を歩いて、三崎港でまぐろを食べる海の日帰り。",
+    actions: ["電車とバスのお得なきっぷを調べる", "城ヶ島の海辺を歩く", "三崎港でまぐろ"]
+  },
+  {
+    name: "房総・鴨川", area: "千葉", access: "東京から特急で約2時間", stays: ["day", "1night"], budget: 2,
+    profile: { sea: 3, family: 2, thrill: 1, relax: 1 },
+    plan: "水族館でシャチのショー、海の見える宿でのんびり。",
+    actions: ["水族館のショーの時間を確認", "海の見える宿を選ぶ", "朝の海辺を散歩"]
+  },
+  {
+    name: "ひたちなか・大洗", area: "茨城", access: "東京から特急で約1時間半", stays: ["day"], budget: 1,
+    profile: { nature: 2, sea: 2, family: 2, romance: 1, food: 1 },
+    plan: "季節の花で丘が染まる公園と、海の上の鳥居、水族館をめぐる。",
+    actions: ["公園の花の見ごろを調べる", "大洗の海の鳥居を見る", "水族館も候補に"]
+  },
+  {
+    name: "仙台・松島", area: "宮城", access: "東京から新幹線で約1時間半", stays: ["1night", "2night"], budget: 3,
+    profile: { food: 3, sea: 2, culture: 2, city: 1 },
+    plan: "牛たんとずんだを食べて、松島の島々を遊覧船から眺める。",
+    actions: ["松島の遊覧船に乗る", "牛たんの店を決めておく", "仙台駅でずんだシェイク"]
+  },
+  {
+    name: "京都", area: "京都", access: "東京から新幹線で約2時間15分", stays: ["1night", "2night"], budget: 3,
+    profile: { culture: 3, romance: 2, solo: 2, food: 1 },
+    plan: "朝の寺社は空いていて静か。エリアを1〜2つに絞ってゆっくり歩く。",
+    actions: ["人気の寺社は朝いちばんに", "エリアを2つまでに絞る", "夜は町家の店で食事"]
+  },
+  {
+    name: "金沢", area: "石川", access: "東京から新幹線で約2時間半", stays: ["1night", "2night"], budget: 3,
+    profile: { culture: 3, food: 3, romance: 1 },
+    plan: "兼六園と茶屋街を歩き、近江町市場で海鮮。食も街並みも楽しめる。",
+    actions: ["近江町市場は昼前に", "ひがし茶屋街を散歩", "兼六園は朝が空いている"]
+  },
+  {
+    name: "大阪", area: "大阪", access: "東京から新幹線で約2時間半", stays: ["1night", "2night"], budget: 3,
+    profile: { city: 3, food: 3, night: 2, thrill: 2 },
+    plan: "道頓堀で食べ倒れ、テーマパークや新世界でとことん遊ぶにぎやか旅。",
+    actions: ["粉もんの店をはしご", "テーマパークは前売り券を", "夜の道頓堀を歩く"]
+  },
+  {
+    name: "札幌・小樽", area: "北海道", access: "東京から飛行機で約1時間半", stays: ["2night"], budget: 3,
+    profile: { food: 3, city: 2, nature: 2, night: 1, romance: 1 },
+    plan: "札幌でラーメンとスープカレー、小樽で運河とガラス細工。",
+    actions: ["小樽運河は夕方がきれい", "朝は市場で海鮮丼", "夜は札幌の夜景"]
+  },
+  {
+    name: "沖縄本島", area: "沖縄", access: "東京から飛行機で約2時間半", stays: ["2night"], budget: 3,
+    profile: { sea: 3, relax: 3, romance: 2, family: 1 },
+    plan: "青い海とのんびりした島時間。移動は少なめにして海辺で過ごす。",
+    actions: ["レンタカーを早めに予約", "1日は移動しない日を作る", "夕日の見える浜へ"]
   }
 ];
 
-const state = {
-  step: 0,
-  picks: [],
-  result: null
+const reasonLabels = {
+  relax: "ゆっくり休みたい",
+  thrill: "体を動かして遊びたい",
+  romance: "雰囲気を大事にしたい",
+  nature: "自然にふれたい",
+  city: "街を楽しみたい",
+  sea: "海が見たい",
+  mountain: "山や高原の空気がほしい",
+  culture: "町並みや歴史を見たい",
+  night: "夜景も楽しみたい",
+  solo: "自分のペースで回りたい",
+  food: "ご当地グルメが楽しみ",
+  onsen: "温泉に入りたい",
+  family: "家族で安心して楽しみたい"
 };
 
-const introScreen = document.getElementById("intro-screen");
-const quizScreen = document.getElementById("quiz-screen");
-const resultScreen = document.getElementById("result-screen");
-const questionText = document.getElementById("question-text");
-const questionLabel = document.getElementById("question-label");
-const questionHint = document.getElementById("question-hint");
-const answersWrap = document.getElementById("answers");
-const selectionTrail = document.getElementById("selection-trail");
-const progressStep = document.getElementById("progress-step");
-const progressFill = document.getElementById("progress-fill");
-const backBtn = document.getElementById("back-btn");
-const destinationEl = document.getElementById("destination");
-const descEl = document.getElementById("desc");
-const reasonsEl = document.getElementById("reasons");
-const inviteArea = document.getElementById("invite-area");
-const searchLink = document.getElementById("search-link");
-const searchLinkAlt = document.getElementById("search-link-alt");
-const vividAltRow = document.getElementById("vivid-alt-row");
-const vividSearchHint = document.getElementById("vivid-search-hint");
-const modeSwitch = document.getElementById("mode-switch");
+const stayLabels = { day: "日帰り", "1night": "1泊", "2night": "2泊以上" };
+const budgetLabels = { 1: "〜1万円", 2: "〜3万円", 3: "3万円〜" };
 
-function topSignalWord(signal) {
-  const signalWordMap = {
-    relax: "癒し",
-    thrill: "刺激",
-    romance: "ロマンチック",
-    nature: "自然",
-    city: "都会",
-    sea: "海",
-    mountain: "高原",
-    culture: "文化",
-    night: "夜景",
-    solo: "一人旅"
-  };
+const state = { step: 0, picks: [], ranked: [], shown: 0 };
 
-  return signalWordMap[signal] || "旅";
-}
-
-function setMode(nextMode, updateUrl = true) {
-  mode = nextMode === "vivid" ? "vivid" : "calm";
-  document.body.dataset.mode = mode;
-
-  if (mode === "vivid") {
-    modeSwitch.textContent = "現在: 大人モード";
-    modeSwitch.classList.add("active");
-  } else {
-    modeSwitch.textContent = "現在: 通常モード";
-    modeSwitch.classList.remove("active");
-  }
-
-  if (updateUrl) {
-    const url = new URL(location.href);
-    if (mode === "vivid") {
-      url.searchParams.set("mode", "vivid");
-    } else {
-      url.searchParams.delete("mode");
-    }
-    history.replaceState({}, "", url);
-  }
-}
+const $ = (id) => document.getElementById(id);
+const introScreen = $("intro-screen");
+const quizScreen = $("quiz-screen");
+const resultScreen = $("result-screen");
+const answersWrap = $("answers");
+const backBtn = $("back-btn");
+const shareFeedback = $("share-feedback");
 
 function openScreen(screen) {
-  introScreen.classList.add("hidden");
-  quizScreen.classList.add("hidden");
-  resultScreen.classList.add("hidden");
+  [introScreen, quizScreen, resultScreen].forEach((s) => s.classList.add("hidden"));
   screen.classList.remove("hidden");
+  window.scrollTo(0, 0);
 }
 
 function resetQuiz() {
   state.step = 0;
   state.picks = [];
-  state.result = null;
+  state.ranked = [];
   openScreen(introScreen);
-  renderSelectionTrail();
 }
 
 function buildScore() {
-  return state.picks.reduce((sum, pick) => {
+  const score = {};
+  state.picks.forEach((pick) => {
     Object.entries(pick.score).forEach(([key, point]) => {
-      sum[key] = (sum[key] || 0) + point;
+      score[key] = (score[key] || 0) + point;
     });
-    return sum;
-  }, {});
-}
-
-function getTopSignals(score, count = 3) {
-  return Object.entries(score)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, count);
-}
-
-function chooseDestination(score) {
-  const ranked = destinations
-    .map((dest) => {
-      const match = Object.entries(dest.profile).reduce((total, [key, point]) => {
-        return total + point * (score[key] || 0);
-      }, 0);
-      return { ...dest, match };
-    })
-    .sort((a, b) => b.match - a.match);
-
-  return ranked;
-}
-
-function reasonText(signal, point) {
-  const labels = {
-    relax: "ゆったり回復したい気分",
-    thrill: "刺激を求めるテンション",
-    romance: "ロマン重視の感性",
-    nature: "自然を求める志向",
-    city: "都市エネルギーを浴びたい欲求",
-    sea: "開放感と海辺への憧れ",
-    mountain: "高低差のある景色への関心",
-    culture: "文化体験への好奇心",
-    night: "夜に強い高揚感",
-    solo: "自分軸で動きたい意識"
-  };
-
-  const label = labels[signal] || signal;
-  return `${label}（スコア ${point}）`;
-}
-
-function renderSelectionTrail() {
-  if (!selectionTrail) {
-    return;
-  }
-  selectionTrail.innerHTML = "";
-  if (state.picks.length === 0) {
-    const empty = document.createElement("span");
-    empty.className = "trail-chip";
-    empty.textContent = "まだ未選択";
-    selectionTrail.appendChild(empty);
-    return;
-  }
-
-  state.picks.forEach((pick, index) => {
-    const chip = document.createElement("span");
-    chip.className = "trail-chip";
-    chip.textContent = `Q${index + 1}: ${pick.label}`;
-    selectionTrail.appendChild(chip);
   });
+  return score;
+}
+
+function rankDestinations() {
+  const score = buildScore();
+  const stay = state.picks[0].stay;
+  const budget = state.picks[1].budget;
+  return destinations
+    .map((dest) => {
+      const weight = Object.values(dest.profile).reduce((a, b) => a + b, 0);
+      // 特徴の多い行き先ばかり出ないよう、特徴の合計で割ってならす
+      let match = (Object.entries(dest.profile).reduce((total, [key, point]) => total + point * (score[key] || 0), 0) * 3) / Math.sqrt(weight);
+      // 日数と予算は好みより優先する。合わない行き先は大きく下げる
+      if (!dest.stays.includes(stay)) match -= 60;
+      if (dest.budget > budget) match -= 40 * (dest.budget - budget);
+      // 2泊以上なら遠くの行き先を少し優先
+      if (stay === "2night" && dest.budget === 3) match += 6;
+      return { dest, match };
+    })
+    .sort((a, b) => b.match - a.match)
+    .map((r) => r.dest);
+}
+
+function reasonsFor(dest) {
+  const score = buildScore();
+  const reasons = Object.keys(dest.profile)
+    .filter((key) => score[key])
+    .sort((a, b) => dest.profile[b] * score[b] - dest.profile[a] * score[a])
+    .slice(0, 2)
+    .map((key) => reasonLabels[key]);
+  const stay = state.picks[0].stay;
+  if (dest.stays.includes(stay)) reasons.push(`${stayLabels[stay]}で行ける`);
+  return reasons;
 }
 
 function updateProgress() {
   const total = questions.length;
-  progressStep.textContent = `Q${state.step + 1} / Q${total}`;
-  const ratio = (state.step / total) * 100;
-  progressFill.style.width = `${Math.max(ratio, 4)}%`;
+  $("progress-step").textContent = `${state.step + 1} / ${total}`;
+  $("progress-fill").style.width = `${Math.max((state.step / total) * 100, 4)}%`;
   backBtn.disabled = state.step === 0;
 }
 
 function showQuestion() {
   openScreen(quizScreen);
   const q = questions[state.step];
-  questionLabel.textContent = `Question ${state.step + 1}`;
-  questionText.textContent = q.text;
-  questionHint.textContent = q.hint;
+  $("question-text").textContent = q.text;
+  $("question-hint").textContent = q.hint;
   updateProgress();
-  renderSelectionTrail();
 
   answersWrap.innerHTML = "";
   q.choices.forEach((choice) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "answer-btn";
-    button.innerHTML = `<span class="answer-title">${choice.label}</span><span class="answer-meta">${choice.note}</span>`;
+    const title = document.createElement("span");
+    title.className = "answer-title";
+    title.textContent = choice.label;
+    const meta = document.createElement("span");
+    meta.className = "answer-meta";
+    meta.textContent = choice.note;
+    button.append(title, meta);
     button.addEventListener("click", () => selectChoice(choice));
     answersWrap.appendChild(button);
   });
@@ -319,151 +377,104 @@ function selectChoice(choice) {
     showQuestion();
     return;
   }
-  showResult();
+  state.ranked = rankDestinations();
+  showResult(0);
 }
 
 function goBack() {
-  if (state.step === 0) {
-    return;
-  }
-  state.picks = state.picks.slice(0, state.step - 1);
+  if (state.step === 0) return;
   state.step -= 1;
+  state.picks = state.picks.slice(0, state.step);
   showQuestion();
 }
 
-function resultDescription(placeName, score) {
-  const top = getTopSignals(score, 2).map(([key]) => reasonText(key, score[key]).split("（")[0]);
-  return `あなたの旅テンションは「${top.join(" × ")}」タイプ。今回の回答では ${placeName} がいちばん近いイメージです。`;
+function mapsDirUrl(dest) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest.name.replace(/（.*）/, "") + " " + dest.area)}`;
 }
 
-function dmmVideoaSearchUrl(query) {
-  return `https://www.dmm.co.jp/digital/videoa/-/list/search/=/?searchstr=${encodeURIComponent(query)}`;
+function mapsStayUrl(dest) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dest.name.replace(/（.*）/, "") + " 宿")}`;
 }
 
-/**
- * 長いフレーズやスペース区切りの複合語は在庫と一致しにくい。
- * 短い日本語2語程度＋第2候補で当たりやすさを上げる。
- */
-function buildVividSearchQueries(destination, topSignal) {
-  const byDestination = {
-    北海道: { a: "人妻 中出", b: "夫婦 温泉" },
-    東京: { a: "巨乳 痴女", b: "人妻 中出" },
-    沖縄: { a: "水着 巨乳", b: "南国" },
-    長野: { a: "人妻 不倫", b: "温泉" },
-    神戸: { a: "人妻 若妻", b: "不倫" }
-  };
-
-  const bySignal = {
-    relax: "人妻 温泉",
-    thrill: "痴女 中出",
-    romance: "若妻 不倫",
-    nature: "人妻 温泉",
-    city: "OL 中出",
-    sea: "水着 巨乳",
-    mountain: "温泉 不倫",
-    culture: "人妻 熟女",
-    night: "痴女 人妻",
-    solo: "素人 中出"
-  };
-
-  const fallback = { a: "人妻", b: "中出" };
-  const d = byDestination[destination.name] || fallback;
-  const s = bySignal[topSignal] || d.a;
-
-  const a = s.length <= 12 ? s : d.a;
-  return { primary: a, alt: a === d.a ? d.b : d.a };
+function guideUrl(dest) {
+  return `https://www.google.com/search?q=${encodeURIComponent(dest.name.replace(/（.*）/, "") + " 観光 モデルコース")}`;
 }
 
-function buildSearchLink(destination, score) {
-  const topSignal = getTopSignals(score, 1)[0]?.[0] || "culture";
-  if (mode === "vivid") {
-    const { primary, alt } = buildVividSearchQueries(destination, topSignal);
-    return {
-      href: dmmVideoaSearchUrl(primary),
-      label: "DMMで探す（候補A）",
-      hrefAlt: dmmVideoaSearchUrl(alt),
-      labelAlt: "候補Bで探す"
-    };
-  }
+function showResult(index) {
+  state.shown = index;
+  const dest = state.ranked[index];
+  const stay = state.picks[0].stay;
 
-  const keyword = `${destination.name} 旅行 ${topSignalWord(topSignal) || "観光"}`;
-  return {
-    href: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`,
-    label: "旅先情報を検索する"
-  };
-}
+  $("destination").textContent = dest.name;
+  $("result-meta").textContent = `${dest.area}・${dest.access}・${budgetLabels[dest.budget]}`;
+  $("plan").textContent = dest.plan;
 
-function showResult() {
-  const score = buildScore();
-  const rankedDestinations = chooseDestination(score);
-  const destination = rankedDestinations[0];
-  const topSignals = getTopSignals(score, 2);
-  const linkData = buildSearchLink(destination, score);
-  const description = resultDescription(destination.name, score);
-
-  destinationEl.textContent = destination.name;
-  descEl.textContent = description;
-  searchLink.href = linkData.href;
-  searchLink.textContent = linkData.label;
-
-  if (mode === "vivid" && linkData.hrefAlt) {
-    searchLinkAlt.href = linkData.hrefAlt;
-    searchLinkAlt.textContent = linkData.labelAlt;
-    if (vividAltRow) {
-      vividAltRow.classList.remove("hidden");
-    }
-    if (vividSearchHint) {
-      vividSearchHint.classList.remove("hidden");
-    }
-  } else {
-    if (vividAltRow) {
-      vividAltRow.classList.add("hidden");
-    }
-    if (vividSearchHint) {
-      vividSearchHint.classList.add("hidden");
-    }
-  }
-  state.result = { destination, score, topSignals, description };
-
-  reasonsEl.innerHTML = "";
-  topSignals.forEach(([signal, point]) => {
+  const reasons = $("reasons");
+  reasons.innerHTML = "";
+  reasonsFor(dest).forEach((text) => {
     const li = document.createElement("li");
-    li.textContent = reasonText(signal, point);
-    reasonsEl.appendChild(li);
+    li.textContent = text;
+    reasons.appendChild(li);
   });
 
-  if (mode === "calm") {
-    inviteArea.classList.remove("hidden");
-  } else {
-    inviteArea.classList.add("hidden");
-  }
+  const actions = $("actions");
+  actions.innerHTML = "";
+  dest.actions.forEach((text) => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    actions.appendChild(li);
+  });
 
-  progressFill.style.width = "100%";
+  $("route-link").href = mapsDirUrl(dest);
+  $("guide-link").href = guideUrl(dest);
+  const stayLink = $("stay-link");
+  stayLink.href = mapsStayUrl(dest);
+  stayLink.classList.toggle("hidden", stay === "day");
+
+  const others = $("others");
+  others.innerHTML = "";
+  state.ranked.slice(0, 3).forEach((d, i) => {
+    if (i === index) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "other-btn";
+    const name = document.createElement("strong");
+    name.textContent = d.name;
+    const meta = document.createElement("span");
+    meta.textContent = d.access;
+    button.append(name, meta);
+    button.addEventListener("click", () => showResult(i));
+    others.appendChild(button);
+  });
+
+  shareFeedback.textContent = "";
+  $("progress-fill").style.width = "100%";
   openScreen(resultScreen);
   resultScreen.classList.remove("result-animate");
   void resultScreen.offsetWidth;
   resultScreen.classList.add("result-animate");
 }
 
-function bindIf(element, eventName, handler) {
-  if (element) {
-    element.addEventListener(eventName, handler);
+async function shareResult() {
+  const dest = state.ranked[state.shown];
+  const text = `TripTuneの旅先診断で「${dest.name}」になりました。${dest.plan}`;
+  const url = location.origin + location.pathname;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: "TripTune", text, url });
+      return;
+    }
+    await navigator.clipboard.writeText(`${text}\n${url}`);
+    shareFeedback.textContent = "結果をコピーしました。LINEなどに貼りつけて送れます。";
+  } catch (e) {
+    if (e && e.name === "AbortError") return;
+    shareFeedback.textContent = "コピーできませんでした。画面を長押ししてコピーしてください。";
   }
 }
 
-bindIf(document.getElementById("start-btn"), "click", showQuestion);
-bindIf(document.getElementById("retry-btn"), "click", resetQuiz);
-bindIf(document.getElementById("back-btn"), "click", goBack);
-bindIf(document.getElementById("invite-btn"), "click", () => {
-  setMode("vivid");
-  showResult();
-});
-bindIf(modeSwitch, "click", () => {
-  setMode(mode === "calm" ? "vivid" : "calm");
-  if (!resultScreen.classList.contains("hidden") && state.picks.length === questions.length) {
-    showResult();
-  }
-});
+$("start-btn").addEventListener("click", showQuestion);
+$("retry-btn").addEventListener("click", resetQuiz);
+backBtn.addEventListener("click", goBack);
+$("share-btn").addEventListener("click", shareResult);
 
-setMode(mode, false);
 resetQuiz();
