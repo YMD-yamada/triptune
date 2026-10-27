@@ -1,85 +1,89 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TripTune</title>
+  <title>TripTune｜週末の行き先が決まる旅先診断</title>
+  <meta name="description" content="6つの質問に答えるだけで、日数と予算に合う旅先を関東近郊を中心に30か所から提案します。">
+  <meta name="theme-color" content="#3654ff">
   <link rel="stylesheet" href="styles.css">
   <meta name="robots" content="noindex">
 </head>
-<body data-mode="calm">
+<body>
   <main class="app-shell">
     <header class="hero">
-      <p class="eyebrow">TRIP DIAGNOSIS</p>
-      <div class="hero-row">
-        <h1>TripTune</h1>
-        <button id="mode-switch" class="mode-switch" type="button" aria-live="polite"></button>
-      </div>
-      <p class="hero-copy">質問に答えるだけで、今の気分に合う旅先を1つ提案します。</p>
+      <p class="eyebrow">旅先しんだん</p>
+      <h1>TripTune</h1>
+      <p class="hero-copy">「どこか行きたいけど決まらない」をなくすアプリ。6つの質問で、日数と予算に合う旅先を1つに決めます。</p>
     </header>
 
     <section id="intro-screen" class="panel">
-      <h2>3ステップで診断</h2>
-      <p>①質問に答える → ②旅先が出る → ③そのまま検索する</p>
-      <button id="start-btn" class="primary-btn" type="button">診断をはじめる</button>
+      <h2>1分で行き先が決まる</h2>
+      <ol class="intro-steps">
+        <li>日数・予算・気分など6つに答える</li>
+        <li>関東近郊を中心に30か所から1つ提案</li>
+        <li>ルートや宿をそのまま探せる</li>
+      </ol>
+      <button id="start-btn" class="primary-btn wide" type="button">診断をはじめる</button>
+      <p class="note">時間は東京駅から出発したときの目安です。</p>
     </section>
 
     <section id="quiz-screen" class="panel hidden" aria-live="polite">
       <div class="progress-wrap">
         <div class="progress-meta">
-          <span id="progress-step">Q1 / Q7</span>
-          <button id="back-btn" class="ghost-btn" type="button">1つ戻る</button>
+          <span id="progress-step">1 / 6</span>
+          <button id="back-btn" class="ghost-btn small" type="button">1つ戻る</button>
         </div>
-        <div class="progress-bar">
-          <span id="progress-fill"></span>
-        </div>
+        <div class="progress-bar"><span id="progress-fill"></span></div>
       </div>
 
       <article class="question-card">
-        <p id="question-label" class="question-label">Question</p>
         <h2 id="question-text"></h2>
         <p id="question-hint" class="question-hint"></p>
       </article>
-
-      <div class="trail-wrap">
-        <p class="trail-label">選択中の旅ログ</p>
-        <div id="selection-trail" class="trail-chips"></div>
-      </div>
 
       <div id="answers" class="answers-grid"></div>
     </section>
 
     <section id="result-screen" class="panel hidden" aria-live="polite">
-      <p class="result-kicker result-item" style="--delay: 0ms;">あなたに合う旅先</p>
+      <p class="result-kicker result-item" style="--delay: 0ms;">あなたにおすすめの旅先</p>
       <h2 id="destination" class="result-item" style="--delay: 60ms;"></h2>
-      <p id="desc" class="result-desc result-item" style="--delay: 120ms;"></p>
+      <p id="result-meta" class="result-meta result-item" style="--delay: 90ms;"></p>
+      <p id="plan" class="result-desc result-item" style="--delay: 120ms;"></p>
 
       <div class="result-block result-item" style="--delay: 180ms;">
-        <h3>この提案になった理由</h3>
+        <h3>ここが合っている理由</h3>
         <ul id="reasons" class="reason-list"></ul>
       </div>
 
-      <div class="cta-row result-item" style="--delay: 240ms;">
-        <a id="search-link" class="primary-btn" href="#" target="_blank" rel="noopener noreferrer"></a>
-        <button id="retry-btn" class="ghost-btn" type="button">もう一度診断する</button>
-      </div>
-      <p id="vivid-search-hint" class="vivid-hint result-item hidden" style="--delay: 255ms;" aria-live="polite">
-        ヒットが少ないときは、下の短いキーワード候補も試してください（サイトの在庫により結果は変わります）。
-      </p>
-      <div class="cta-row cta-row-alt result-item hidden" id="vivid-alt-row" style="--delay: 265ms;">
-        <a id="search-link-alt" class="secondary-btn" href="#" target="_blank" rel="noopener noreferrer">候補Bで探す</a>
+      <div class="result-block result-item" style="--delay: 220ms;">
+        <h3>楽しみ方のコツ</h3>
+        <ol id="actions" class="action-list"></ol>
       </div>
 
-      <div id="invite-area" class="invite hidden result-item" style="--delay: 300ms;">
-        <p>この結果を「大人モード」に変換して、夜の旅ワードでも見てみますか？</p>
-        <button id="invite-btn" class="secondary-btn" type="button">大人モードで見る</button>
+      <div class="next-grid result-item" style="--delay: 260ms;">
+        <a id="route-link" class="primary-btn" href="#" target="_blank" rel="noopener noreferrer">行き方を見る（Googleマップ）</a>
+        <a id="stay-link" class="secondary-btn" href="#" target="_blank" rel="noopener noreferrer">近くの宿を探す</a>
+        <a id="guide-link" class="secondary-btn" href="#" target="_blank" rel="noopener noreferrer">モデルコースを見る</a>
+        <button id="share-btn" class="secondary-btn" type="button">一緒に行く人に送る</button>
       </div>
+      <p id="share-feedback" class="share-feedback" aria-live="polite"></p>
+
+      <div class="result-block result-item" style="--delay: 300ms;">
+        <h3>ほかの候補</h3>
+        <div id="others" class="others"></div>
+      </div>
+
+      <button id="retry-btn" class="ghost-btn wide result-item" style="--delay: 340ms;" type="button">もう一度診断する</button>
     </section>
   </main>
 
   <footer class="support-foot">
     <a href="https://ko-fi.com/ymdapps" target="_blank" rel="noopener noreferrer">このアプリを応援する（Ko-fi）</a>
+    <span aria-hidden="true">・</span>
+    <a href="https://ymd-portfolio-site.pages.dev/legal/privacy" target="_blank" rel="noopener noreferrer">プライバシー</a>
+    <span aria-hidden="true">・</span>
+    <a href="https://ymd-portfolio-site.pages.dev/legal/terms" target="_blank" rel="noopener noreferrer">利用規約</a>
   </footer>
 
   <script src="app.js"></script>

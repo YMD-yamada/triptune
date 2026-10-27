@@ -220,23 +220,6 @@ h1 {
   padding: 4px 0;
 }
 
-.mode-switch {
-  border: 1px solid var(--line);
-  background: #fff;
-  color: var(--text-main);
-  border-radius: 999px;
-  padding: 10px 15px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.mode-switch.active {
-  background: #2f1f69;
-  color: #fff;
-  border-color: #2f1f69;
-}
-
 .primary-btn,
 .secondary-btn,
 .ghost-btn,
@@ -261,8 +244,9 @@ h1 {
 }
 
 .secondary-btn {
-  background: #2f1f69;
-  color: #fff;
+  background: var(--card);
+  color: var(--primary);
+  border: 1px solid var(--line);
 }
 
 .ghost-btn {
@@ -654,43 +638,12 @@ h1 {
   flex-wrap: wrap;
 }
 
-.vivid-hint {
-  margin: 8px 0 0;
-  font-size: 0.85rem;
-  line-height: 1.6;
-  color: var(--text-sub);
-  text-align: left;
-}
-
-.cta-row-alt {
-  margin-top: 8px;
-}
-
-.cta-row-alt .secondary-btn {
-  width: 100%;
-  text-align: center;
-}
-
 .cta-row .primary-btn {
   flex: 1 1 210px;
 }
 
 .cta-row .ghost-btn {
   flex: 1 1 170px;
-}
-
-.invite {
-  margin-top: 16px;
-  border-radius: 14px;
-  background: #f6f0ff;
-  border: 1px solid #e7d8ff;
-  padding: 14px;
-}
-
-.invite p {
-  margin: 0 0 10px;
-  font-size: 0.9rem;
-  color: #4a4368;
 }
 
 .share-row {
@@ -718,56 +671,6 @@ h1 {
   min-height: 1.2em;
   font-size: 0.85rem;
   color: var(--text-sub);
-}
-
-body[data-mode="vivid"] {
-  --bg: #150f24;
-  --bg-accent: radial-gradient(circle at top right, #372355 0%, #1a1231 42%, #120d22 100%);
-  --card: #201739;
-  --text-main: #f4f3ff;
-  --text-sub: #c8c2e5;
-  --primary: #ff3d9b;
-  --primary-soft: #3e315f;
-  --line: #473767;
-  --shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
-}
-
-body[data-mode="vivid"] .question-card,
-body[data-mode="vivid"] .result-block,
-body[data-mode="vivid"] .disclosure-panel,
-body[data-mode="vivid"] .hero-side,
-body[data-mode="vivid"] .compare-card {
-  background: #261a43;
-  border-color: #6f56a3;
-}
-
-body[data-mode="vivid"] .answer-btn {
-  background: #2d1f51;
-  border-color: #7b63b3;
-  color: #f7f4ff;
-}
-
-body[data-mode="vivid"] .invite {
-  background: #2a1f49;
-  border-color: #5e4a8a;
-}
-
-body[data-mode="vivid"] .intro-chip,
-body[data-mode="vivid"] .trail-chip,
-body[data-mode="vivid"] .pick-chip {
-  background: #2f2154;
-  border-color: #785faf;
-  color: #e8defb;
-}
-
-body[data-mode="vivid"] .vivid-hint {
-  color: #e3d9f6;
-}
-
-body[data-mode="vivid"] .result-share-card {
-  background:
-    linear-gradient(135deg, rgba(255, 61, 155, 0.94), rgba(95, 62, 160, 0.92));
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32);
 }
 
 @keyframes result-pop {
@@ -820,14 +723,6 @@ body[data-mode="vivid"] .result-share-card {
     align-items: flex-start;
   }
 
-  .mode-switch {
-    width: 100%;
-  }
-
-  .progress-meta {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 
   .cta-row {
     flex-direction: column;
@@ -847,4 +742,92 @@ body[data-mode="vivid"] .result-share-card {
 
 .support-foot a {
   color: inherit;
+}
+
+.intro-steps {
+  margin: 0 0 18px;
+  padding-left: 1.4em;
+  line-height: 1.9;
+  color: var(--text-sub);
+}
+
+.wide {
+  width: 100%;
+}
+
+.small {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.note {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-sub);
+}
+
+.result-meta {
+  margin: 4px 0 10px;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+}
+
+.action-list {
+  margin: 0;
+  padding-left: 1.4em;
+  line-height: 1.8;
+}
+
+.next-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.next-grid .primary-btn,
+#share-btn {
+  grid-column: 1 / -1;
+}
+
+.next-grid .secondary-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+}
+
+.others {
+  display: grid;
+  gap: 8px;
+}
+
+.other-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text-main);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.other-btn span {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+
+#retry-btn {
+  margin-top: 16px;
+}
+
+.support-foot a + span {
+  margin: 0 4px;
 }
